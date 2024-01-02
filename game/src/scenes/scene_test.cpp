@@ -32,14 +32,12 @@ void SceneTest::OnSceneEnter()
 
     m_Player->AddComponent<CSprite>(
         ResourceManager::GetInstance().GetTexture("tex_player"),
-        0, 0, 32, 32
-    );
+        0, 0, 32, 32);
 
     m_Player->AddComponent<CPlayerActions>();
 
     m_Player->AddComponent<CSpriteAnimator>(
-        ResourceManager::GetInstance().GetAnimation("anim_player_idle")
-    );
+        ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
 }
 
 void SceneTest::OnSceneExit()
@@ -49,7 +47,7 @@ void SceneTest::OnSceneExit()
 
 void SceneTest::OnAction(Action action)
 {
-    auto& playerActions = m_Player->GetComponent<CPlayerActions>();
+    auto &playerActions = m_Player->GetComponent<CPlayerActions>();
 
     if (action.Name == "Up")
     {
@@ -144,73 +142,97 @@ void SceneTest::UpdatePositions(f64 dt)
 {
     for (auto e : m_World.GetEntities())
     {
-        // if (e->Velocity && e->Transform)
-        // {
-        //     e->Transform->Position += e->Velocity->Velocity * dt;
-        //     e->Transform->Rotation += e->Velocity->AngularVelocity * dt;
-        // }
+        if (e->HasComponent<CVelocity>() && e->HasComponent<CTransform>())
+        {
+            auto &tf = e->GetComponent<CTransform>();
+            auto &vel = e->GetComponent<CVelocity>();
+            tf.Position += vel.Velocity * dt;
+            tf.Rotation += vel.AngularVelocity * dt;
+        }
     }
 }
 
 void SceneTest::UpdatePlayerAnimationState(f64 dt)
 {
-    // if (m_Player->PlayerActions->Left || m_Player->PlayerActions->Right)
-    // {
-    //     m_Player->Animator->AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_run");
-    //     m_Player->Transform->Scale.x = (m_Player->PlayerActions->Left) ? -1.0f : 1.0f;
-    // } else {
-    //     m_Player->Animator->AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_idle");
-    // }
+    if (!m_Player->HasComponent<CPlayerActions>())
+    {
+        return;
+    }
+
+    auto &actions = m_Player->GetComponent<CPlayerActions>();
+
+    if (m_Player->HasComponent<CTransform>() && m_Player->HasComponent<CSpriteAnimator>())
+    {
+        auto& anim = m_Player->GetComponent<CSpriteAnimator>();
+        auto& tf = m_Player->GetComponent<CTransform>();
+
+        if (actions.Left || actions.Right)
+        {
+            anim.AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_run");
+            tf.Scale.x = (actions.Left) ? -1.0f : 1.0f;
+        }
+        else
+        {
+            anim.AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_idle");
+        }
+    }
+
 }
 
 void SceneTest::UpdateAnimations(f64 dt)
 {
-    // for (auto e : m_World.GetEntities())
-    // {
-    //     if (e->Animator)
-    //     {
-    //         auto &anim = e->Animator->AnimationSource;
-    //         e->Animator->TimeAccumulator += dt;
-    //         while (e->Animator->TimeAccumulator > anim.FrameTime)
-    //         {
-    //             e->Animator->TimeAccumulator -= anim.FrameTime;
-    //             e->Animator->CurrentFrame = (e->Animator->CurrentFrame + 1) % anim.FrameCount;
-    //         }
+    for (auto e : m_World.GetEntities())
+    {
+        if (e->HasComponent<CSpriteAnimator>())
+        {
+            auto &anim = e->GetComponent<CSpriteAnimator>();
+            anim.TimeAccumulator += dt;
 
-    //         if (e->Sprite)
-    //         {
-    //             e->Sprite->Sprite.setTexture(
-    //                 ResourceManager::GetInstance().GetTexture(anim.TextureSourceName));
+            while (anim.TimeAccumulator > anim.AnimationSource.FrameTime)
+            {
+                anim.TimeAccumulator -= anim.AnimationSource.FrameTime;
+                anim.CurrentFrame = (anim.CurrentFrame + 1) % anim.AnimationSource.FrameCount;
+            }
 
-    //             e->Sprite->Sprite.setTextureRect(sf::IntRect(
-    //                 anim.OffsetX + (anim.FrameWidth * e->Animator->CurrentFrame),
-    //                 anim.OffsetY,
-    //                 anim.FrameWidth,
-    //                 anim.FrameHeight));
-    //         }
-    //     }
-    // }
+            if (e->HasComponent<CSprite>())
+            {
+                auto& sprite = e->GetComponent<CSprite>();
+                
+                sprite.Sprite.setTexture(
+                    ResourceManager::GetInstance().GetTexture(anim.AnimationSource.TextureSourceName));
+
+                sprite.Sprite.setTextureRect(sf::IntRect(
+                    anim.AnimationSource.OffsetX + (anim.AnimationSource.FrameWidth * anim.CurrentFrame),
+                    anim.AnimationSource.OffsetY,
+                    anim.AnimationSource.FrameWidth,
+                    anim.AnimationSource.FrameHeight));
+            }
+        }
+    }
 }
 
 void SceneTest::RenderSprites(sf::RenderWindow *window)
 {
-    // sf::View view(sf::FloatRect(0, 0, 320, 180));
-    // window->setView(view);
+    sf::View view(sf::FloatRect(0, 0, 320, 180));
+    window->setView(view);
 
-    // for (auto e : m_World.GetEntities())
-    // {
-    //     if (e->Sprite && e->Transform)
-    //     {
-    //         Vec2 pos = e->Transform->Position;
-    //         f32 rot = e->Transform->Rotation;
-    //         Vec2 scale = e->Transform->Scale;
+    for (auto e : m_World.GetEntities())
+    {
+        if (e->HasComponent<CSprite>() && e->HasComponent<CTransform>())
+        {
+            auto& tf = e->GetComponent<CTransform>();
+            auto& sprite = e->GetComponent<CSprite>();
 
-    //         e->Sprite->Sprite.setPosition(pos.x, 180 - pos.y);
-    //         e->Sprite->Sprite.setRotation(rot);
-    //         e->Sprite->Sprite.setScale(scale.x, scale.y);
-    //         window->draw(e->Sprite->Sprite);
-    //     }
-    // }
+            Vec2 pos = tf.Position;
+            f32 rot = tf.Rotation;
+            Vec2 scale = tf.Scale;
+
+            sprite.Sprite.setPosition(pos.x, 180 - pos.y);
+            sprite.Sprite.setRotation(rot);
+            sprite.Sprite.setScale(scale.x, scale.y);
+            window->draw(sprite.Sprite);
+        }
+    }
 }
 
 void SceneTest::LoadLevel(const std::string &path)

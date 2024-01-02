@@ -34,17 +34,6 @@ class Entity {
         template <typename TComponent> void RemoveComponent();
         template <typename TComponent> bool HasComponent();
 
-        // // Components
-
-        // std::shared_ptr<CTransform> Transform;
-        // std::shared_ptr<CVelocity> Velocity;
-        // std::shared_ptr<CName> Name;
-        // std::shared_ptr<CLifetime> Lifetime;
-        // std::shared_ptr<CActions> Actions;
-        // std::shared_ptr<CSpriteAnimator> Animator;
-        // std::shared_ptr<CSprite> Sprite;
-        // std::shared_ptr<CPlayerActions> PlayerActions;
-
     private:
         Entity(const std::string& tag, size_t id) : m_Tag(tag), m_ID(id) {};
 
