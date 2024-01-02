@@ -1,0 +1,45 @@
+{
+    "resources" : [
+        {
+            "type" : "texture",
+            "name" : "tex_player",
+            "path" : "assets/textures/spritesheets/player.png"
+        },
+        {
+            "type" : "texture",
+            "name" : "tex_tilesheet",
+            "path" : "assets/textures/environment/tileset.png"
+        },
+        {
+            "type" : "animation",
+            "name" : "anim_player_idle",
+            "animation" : {
+                "texture-source" : "tex_player",
+                "frames" : 4,
+                "framerate" : 6,
+                "width" : 32,
+                "height" : 32,
+                "offset-x" : 0,
+                "offset-y" : 0
+            }
+        },
+        {
+            "type" : "animation",
+            "name" : "anim_player_run",
+            "animation" : {
+                "texture-source" : "tex_player",
+                "frames" : 6,
+                "framerate" : 6,
+                "width" : 32,
+                "height" : 32,
+                "offset-x" : 0,
+                "offset-y" : 32
+            }
+        },
+        {
+            "type" : "font",
+            "name" : "font_rubik_doodle",
+            "path" : "assets/fonts/rubik/RubikDoodleShadow-Regular.ttf"
+        }
+    ]
+}
