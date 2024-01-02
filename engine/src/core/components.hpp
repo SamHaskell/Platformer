@@ -8,39 +8,48 @@
 #include "SFML/System.hpp"
 #include "SFML/Graphics.hpp"
 
-struct CTransform
+struct Component
+{
+    bool Exists = false;
+};
+
+struct CTransform : Component
 {
     Vec2 Position = {0, 0};
     Vec2 Scale = {1, 1};
     f32 Rotation = 0.0f;
 
+    CTransform() = default;
     CTransform(Vec2 position, Vec2 scale, f32 rotation) : Position(position), Scale(scale), Rotation(rotation) {}
 };
 
-struct CVelocity
+struct CVelocity : Component
 {
     Vec2 Velocity = {0, 0};
     f32 AngularVelocity = 0.0f;
 
+    CVelocity() = default;
     CVelocity(Vec2 velocity, f32 angularVelocity) : Velocity(velocity), AngularVelocity(angularVelocity) {}
 };
 
-struct CName
+struct CName : Component
 {
     std::string Name = "default";
 
+    CName() = default;
     CName(const std::string &name) : Name(name) {}
 };
 
-struct CLifetime
+struct CLifetime : Component
 {
     f64 Duration = 1.0f;
     f64 Remaining;
 
+    CLifetime() = default;
     CLifetime(f64 duration) : Duration(duration), Remaining(duration){};
 };
 
-struct CActions
+struct CActions : Component
 {
     bool Up = false;
     bool Left = false;
@@ -49,13 +58,14 @@ struct CActions
     bool Primary = false;
     bool Secondary = false;
 
-    CActions(){};
+    CActions() = default;
 };
 
-struct CSprite
+struct CSprite : Component
 {
     sf::Sprite Sprite;
 
+    CSprite() = default;
     CSprite(sf::Texture& source, i32 srcx, i32 srcy, i32 srcw, i32 srch) {
         Sprite = sf::Sprite(source, sf::IntRect(
             srcx, srcy,
@@ -69,23 +79,26 @@ struct CSprite
     };
 };
 
-struct CSpriteAnimator
+struct CSpriteAnimator : Component
 {
-    Animation AnimationSource;
-    u32 CurrentFrame;
-    f64 TimeAccumulator;
+    Animation AnimationSource = {};
+    u32 CurrentFrame = 0;
+    f64 TimeAccumulator = 0.0;
 
+    CSpriteAnimator() = default;
     CSpriteAnimator(Animation anim) : AnimationSource(anim) {
         CurrentFrame = 0;
         TimeAccumulator = 0.0;
     }
 };
 
-struct CPlayerActions
+struct CPlayerActions : Component
 {
     bool Up = false;
     bool Down = false;
     bool Left = false;
     bool Right = false;
     bool Jump = false;
+
+    CPlayerActions() = default;
 };

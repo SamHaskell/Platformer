@@ -26,20 +26,20 @@ void SceneTest::OnSceneEnter()
 
     m_Player = m_World.AddEntity("player");
 
-    m_Player->Transform = std::make_shared<CTransform>(
-        Vec2{0, 0}, Vec2{1, 1}, 0.0f);
+    m_Player->AddComponent<CTransform>(Vec2{0, 0}, Vec2{1, 1}, 0.0f);
 
-    m_Player->Velocity = std::make_shared<CVelocity>(
-        Vec2{0, 0}, 0.0f);
+    m_Player->AddComponent<CVelocity>(Vec2{0, 0}, 0.0f);
 
-    m_Player->Sprite = std::make_shared<CSprite>(
+    m_Player->AddComponent<CSprite>(
         ResourceManager::GetInstance().GetTexture("tex_player"),
-        0, 0, 32, 32);
+        0, 0, 32, 32
+    );
 
-    m_Player->PlayerActions = std::make_shared<CPlayerActions>();
+    m_Player->AddComponent<CPlayerActions>();
 
-    m_Player->Animator = std::make_shared<CSpriteAnimator>(
-        ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
+    m_Player->AddComponent<CSpriteAnimator>(
+        ResourceManager::GetInstance().GetAnimation("anim_player_idle")
+    );
 }
 
 void SceneTest::OnSceneExit()
@@ -49,25 +49,27 @@ void SceneTest::OnSceneExit()
 
 void SceneTest::OnAction(Action action)
 {
+    auto& playerActions = m_Player->GetComponent<CPlayerActions>();
+
     if (action.Name == "Up")
     {
-        m_Player->PlayerActions->Up = (action.Type == ActionType::Begin);
+        playerActions.Up = (action.Type == ActionType::Begin);
     }
     else if (action.Name == "Left")
     {
-        m_Player->PlayerActions->Left = (action.Type == ActionType::Begin);
+        playerActions.Left = (action.Type == ActionType::Begin);
     }
     else if (action.Name == "Right")
     {
-        m_Player->PlayerActions->Right = (action.Type == ActionType::Begin);
+        playerActions.Right = (action.Type == ActionType::Begin);
     }
     else if (action.Name == "Down")
     {
-        m_Player->PlayerActions->Down = (action.Type == ActionType::Begin);
+        playerActions.Down = (action.Type == ActionType::Begin);
     }
     else if (action.Name == "Jump")
     {
-        m_Player->PlayerActions->Jump = (action.Type == ActionType::Begin);
+        playerActions.Jump = (action.Type == ActionType::Begin);
     }
 }
 
@@ -142,73 +144,73 @@ void SceneTest::UpdatePositions(f64 dt)
 {
     for (auto e : m_World.GetEntities())
     {
-        if (e->Velocity && e->Transform)
-        {
-            e->Transform->Position += e->Velocity->Velocity * dt;
-            e->Transform->Rotation += e->Velocity->AngularVelocity * dt;
-        }
+        // if (e->Velocity && e->Transform)
+        // {
+        //     e->Transform->Position += e->Velocity->Velocity * dt;
+        //     e->Transform->Rotation += e->Velocity->AngularVelocity * dt;
+        // }
     }
 }
 
 void SceneTest::UpdatePlayerAnimationState(f64 dt)
 {
-    if (m_Player->PlayerActions->Left || m_Player->PlayerActions->Right)
-    {
-        m_Player->Animator->AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_run");
-        m_Player->Transform->Scale.x = (m_Player->PlayerActions->Left) ? -1.0f : 1.0f;
-    } else {
-        m_Player->Animator->AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_idle");
-    }
+    // if (m_Player->PlayerActions->Left || m_Player->PlayerActions->Right)
+    // {
+    //     m_Player->Animator->AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_run");
+    //     m_Player->Transform->Scale.x = (m_Player->PlayerActions->Left) ? -1.0f : 1.0f;
+    // } else {
+    //     m_Player->Animator->AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_idle");
+    // }
 }
 
 void SceneTest::UpdateAnimations(f64 dt)
 {
-    for (auto e : m_World.GetEntities())
-    {
-        if (e->Animator)
-        {
-            auto &anim = e->Animator->AnimationSource;
-            e->Animator->TimeAccumulator += dt;
-            while (e->Animator->TimeAccumulator > anim.FrameTime)
-            {
-                e->Animator->TimeAccumulator -= anim.FrameTime;
-                e->Animator->CurrentFrame = (e->Animator->CurrentFrame + 1) % anim.FrameCount;
-            }
+    // for (auto e : m_World.GetEntities())
+    // {
+    //     if (e->Animator)
+    //     {
+    //         auto &anim = e->Animator->AnimationSource;
+    //         e->Animator->TimeAccumulator += dt;
+    //         while (e->Animator->TimeAccumulator > anim.FrameTime)
+    //         {
+    //             e->Animator->TimeAccumulator -= anim.FrameTime;
+    //             e->Animator->CurrentFrame = (e->Animator->CurrentFrame + 1) % anim.FrameCount;
+    //         }
 
-            if (e->Sprite)
-            {
-                e->Sprite->Sprite.setTexture(
-                    ResourceManager::GetInstance().GetTexture(anim.TextureSourceName));
+    //         if (e->Sprite)
+    //         {
+    //             e->Sprite->Sprite.setTexture(
+    //                 ResourceManager::GetInstance().GetTexture(anim.TextureSourceName));
 
-                e->Sprite->Sprite.setTextureRect(sf::IntRect(
-                    anim.OffsetX + (anim.FrameWidth * e->Animator->CurrentFrame),
-                    anim.OffsetY,
-                    anim.FrameWidth,
-                    anim.FrameHeight));
-            }
-        }
-    }
+    //             e->Sprite->Sprite.setTextureRect(sf::IntRect(
+    //                 anim.OffsetX + (anim.FrameWidth * e->Animator->CurrentFrame),
+    //                 anim.OffsetY,
+    //                 anim.FrameWidth,
+    //                 anim.FrameHeight));
+    //         }
+    //     }
+    // }
 }
 
 void SceneTest::RenderSprites(sf::RenderWindow *window)
 {
-    sf::View view(sf::FloatRect(0, 0, 320, 180));
-    window->setView(view);
+    // sf::View view(sf::FloatRect(0, 0, 320, 180));
+    // window->setView(view);
 
-    for (auto e : m_World.GetEntities())
-    {
-        if (e->Sprite && e->Transform)
-        {
-            Vec2 pos = e->Transform->Position;
-            f32 rot = e->Transform->Rotation;
-            Vec2 scale = e->Transform->Scale;
+    // for (auto e : m_World.GetEntities())
+    // {
+    //     if (e->Sprite && e->Transform)
+    //     {
+    //         Vec2 pos = e->Transform->Position;
+    //         f32 rot = e->Transform->Rotation;
+    //         Vec2 scale = e->Transform->Scale;
 
-            e->Sprite->Sprite.setPosition(pos.x, 180 - pos.y);
-            e->Sprite->Sprite.setRotation(rot);
-            e->Sprite->Sprite.setScale(scale.x, scale.y);
-            window->draw(e->Sprite->Sprite);
-        }
-    }
+    //         e->Sprite->Sprite.setPosition(pos.x, 180 - pos.y);
+    //         e->Sprite->Sprite.setRotation(rot);
+    //         e->Sprite->Sprite.setScale(scale.x, scale.y);
+    //         window->draw(e->Sprite->Sprite);
+    //     }
+    // }
 }
 
 void SceneTest::LoadLevel(const std::string &path)
