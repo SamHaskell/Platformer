@@ -82,11 +82,22 @@ struct CSprite : Component
 struct CSpriteAnimator : Component
 {
     Animation AnimationSource = {};
+    bool IsFinished = false;
+    bool IsLooping = true;
     u32 CurrentFrame = 0;
     f64 TimeAccumulator = 0.0;
 
     CSpriteAnimator() = default;
-    CSpriteAnimator(Animation anim) : AnimationSource(anim) {
+    CSpriteAnimator(Animation anim, bool loop = true) : AnimationSource(anim), IsLooping(loop) {
+        CurrentFrame = 0;
+        TimeAccumulator = 0.0;
+    }
+
+    void SetAnimation(Animation anim, bool loop = true) {
+        if (anim == AnimationSource) return;
+        AnimationSource = anim;
+        IsFinished = false;
+        IsLooping = loop;
         CurrentFrame = 0;
         TimeAccumulator = 0.0;
     }

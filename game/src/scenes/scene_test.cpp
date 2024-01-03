@@ -191,12 +191,12 @@ void SceneTest::UpdatePlayerAnimationState(f64 dt)
 
         if (actions.Left || actions.Right)
         {
-            anim.AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_run");
+            anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_run"));
             tf.Scale.x = (actions.Left) ? -1.0f : 1.0f;
         }
         else
         {
-            anim.AnimationSource = ResourceManager::GetInstance().GetAnimation("anim_player_idle");
+            anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
         }
     }
 
@@ -214,7 +214,24 @@ void SceneTest::UpdateAnimations(f64 dt)
             while (anim.TimeAccumulator > anim.AnimationSource.FrameTime)
             {
                 anim.TimeAccumulator -= anim.AnimationSource.FrameTime;
-                anim.CurrentFrame = (anim.CurrentFrame + 1) % anim.AnimationSource.FrameCount;
+                anim.CurrentFrame ++;
+            }
+
+            if (anim.CurrentFrame == anim.AnimationSource.FrameCount)
+            {
+                anim.IsFinished = true;
+                if (anim.IsLooping)
+                {
+                    anim.CurrentFrame = 0;
+                }
+                else
+                {
+                    anim.CurrentFrame = anim.AnimationSource.FrameCount - 1;
+                }
+            }
+            else
+            {
+                anim.IsFinished = false;
             }
 
             if (e->HasComponent<CSprite>())

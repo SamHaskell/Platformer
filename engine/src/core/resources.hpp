@@ -17,6 +17,16 @@ struct Animation {
     u32 FrameHeight;
     i32 OffsetX;
     i32 OffsetY;
+
+    bool operator==(const Animation& other) const {
+        return TextureSourceName == other.TextureSourceName &&
+            FrameCount == other.FrameCount &&
+            FrameTime == other.FrameTime &&
+            FrameWidth == other.FrameWidth &&
+            FrameHeight == other.FrameHeight &&
+            OffsetX == other.OffsetX &&
+            OffsetY == other.OffsetY;
+    }
 };
 
 class ResourceManager : public Singleton<ResourceManager> {
