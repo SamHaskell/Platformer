@@ -24,22 +24,7 @@ void SceneTest::OnSceneEnter()
 
     NT_INFO("Entering test scene.");
 
-    m_Player = m_World.AddEntity("player");
-
-    m_Player->AddComponent<CTransform>(Vec2{0, 0}, Vec2{1, 1}, 0.0f);
-
-    m_Player->AddComponent<CVelocity>(Vec2{0, 0}, 0.0f);
-
-    m_Player->AddComponent<CSprite>(
-        ResourceManager::GetInstance().GetTexture("tex_player"),
-        0, 0, 32, 32);
-
-    m_Player->AddComponent<CPlayerActions>();
-
-    m_Player->AddComponent<CSpriteAnimator>(
-        ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
-
-    m_Player->AddComponent<CGravity>(300.0f);
+    SpawnPlayer();
 }
 
 void SceneTest::OnSceneExit()
@@ -140,6 +125,31 @@ void SceneTest::DrawGUI()
     }
 
     ImGui::End();
+}
+
+void SceneTest::SpawnPlayer()
+{
+    if (m_Player != nullptr)
+    {
+        m_Player->Destroy();
+    }
+
+    m_Player = m_World.AddEntity("player");
+
+    m_Player->AddComponent<CTransform>(Vec2{0, 0}, Vec2{1, 1}, 0.0f);
+
+    m_Player->AddComponent<CVelocity>(Vec2{0, 0}, 0.0f);
+
+    m_Player->AddComponent<CSprite>(
+        ResourceManager::GetInstance().GetTexture("tex_player"),
+        0, 0, 32, 32);
+
+    m_Player->AddComponent<CPlayerActions>();
+
+    m_Player->AddComponent<CSpriteAnimator>(
+        ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
+
+    m_Player->AddComponent<CGravity>(300.0f);
 }
 
 void SceneTest::UpdatePositions(f64 dt)

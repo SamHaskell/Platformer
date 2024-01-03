@@ -15,6 +15,8 @@ class SceneTest : public Scene {
         void Render(sf::RenderWindow* window) override;
         void DrawGUI() override;
 
+    private:
+        void SpawnPlayer();
 
         void UpdateGravity(f64 dt);
         void UpdatePositions(f64 dt);
