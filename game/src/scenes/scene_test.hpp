@@ -16,6 +16,7 @@ class SceneTest : public Scene {
         void DrawGUI() override;
 
         void UpdatePositions(f64 dt);
+        void UpdatePlayerMovement(f64 dt);
         void UpdatePlayerAnimationState(f64 dt);
         void UpdateAnimations(f64 dt);
         void RenderSprites(sf::RenderWindow* window);

@@ -75,6 +75,7 @@ void SceneTest::Update(f64 dt)
 {
     m_World.Update();
 
+    UpdatePlayerMovement(dt);
     UpdatePositions(dt);
     UpdatePlayerAnimationState(dt);
     UpdateAnimations(dt);
@@ -150,6 +151,28 @@ void SceneTest::UpdatePositions(f64 dt)
             tf.Rotation += vel.AngularVelocity * dt;
         }
     }
+}
+
+void SceneTest::UpdatePlayerMovement(f64 dt)
+{
+    if (!m_Player->HasComponent<CPlayerActions>())
+    {
+        return;
+    }
+
+    auto &actions = m_Player->GetComponent<CPlayerActions>();
+
+    m_Player->GetComponent<CVelocity>().Velocity.x = 0.0f;
+
+    if (actions.Left)
+    {
+        m_Player->GetComponent<CVelocity>().Velocity.x -= 100.0f;
+    }
+    if (actions.Right)
+    {
+        m_Player->GetComponent<CVelocity>().Velocity.x += 100.0f;
+    }
+
 }
 
 void SceneTest::UpdatePlayerAnimationState(f64 dt)
@@ -238,6 +261,9 @@ void SceneTest::RenderSprites(sf::RenderWindow *window)
 void SceneTest::LoadLevel(const std::string &path)
 {
     m_World = World();
-
     NT_INFO("Loading level from file: %s", path.c_str());
+
+    // Load entities according to level file spec
+
+
 }
