@@ -113,3 +113,11 @@ struct CPlayerActions : Component
 
     CPlayerActions() = default;
 };
+
+struct CGravity : Component
+{
+    f32 Gravity = 100.0f;
+
+    CGravity() = default;
+    CGravity(f32 gravity) : Gravity(gravity) {}
+};

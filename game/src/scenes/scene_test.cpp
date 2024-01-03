@@ -38,6 +38,8 @@ void SceneTest::OnSceneEnter()
 
     m_Player->AddComponent<CSpriteAnimator>(
         ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
+
+    m_Player->AddComponent<CGravity>(300.0f);
 }
 
 void SceneTest::OnSceneExit()
@@ -75,6 +77,7 @@ void SceneTest::Update(f64 dt)
 {
     m_World.Update();
 
+    UpdateGravity(dt);
     UpdatePlayerMovement(dt);
     UpdatePositions(dt);
     UpdatePlayerAnimationState(dt);
@@ -153,24 +156,40 @@ void SceneTest::UpdatePositions(f64 dt)
     }
 }
 
+void SceneTest::UpdateGravity(f64 dt)
+{
+    for (auto e : m_World.GetEntities())
+    {
+        if (e->HasComponent<CGravity>() && e->HasComponent<CVelocity>())
+        {
+            auto &vel = e->GetComponent<CVelocity>();
+            vel.Velocity.y -= e->GetComponent<CGravity>().Gravity * dt;
+        }
+    }
+}
+
 void SceneTest::UpdatePlayerMovement(f64 dt)
 {
-    if (!m_Player->HasComponent<CPlayerActions>())
-    {
-        return;
-    }
+    if (!m_Player->HasComponent<CPlayerActions>()) { return; }
+    if (!m_Player->HasComponent<CVelocity>()) { return; }
 
     auto &actions = m_Player->GetComponent<CPlayerActions>();
+    auto& vel = m_Player->GetComponent<CVelocity>();
 
-    m_Player->GetComponent<CVelocity>().Velocity.x = 0.0f;
+    vel.Velocity.x = 0.0f;
+
+    if (actions.Jump)
+    {
+        vel.Velocity.y = 100.0f;
+    }
 
     if (actions.Left)
     {
-        m_Player->GetComponent<CVelocity>().Velocity.x -= 100.0f;
+        vel.Velocity.x -= 100.0f;
     }
     if (actions.Right)
     {
-        m_Player->GetComponent<CVelocity>().Velocity.x += 100.0f;
+        vel.Velocity.x += 100.0f;
     }
 
 }
@@ -189,14 +208,34 @@ void SceneTest::UpdatePlayerAnimationState(f64 dt)
         auto& anim = m_Player->GetComponent<CSpriteAnimator>();
         auto& tf = m_Player->GetComponent<CTransform>();
 
-        if (actions.Left || actions.Right)
+        if (m_Player->HasComponent<CVelocity>())
+        {
+            auto& vel = m_Player->GetComponent<CVelocity>();
+            if (vel.Velocity.y > 0.0f)
+            {
+                anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_rise"));
+            }
+            else if (vel.Velocity.y < 0.0f)
+            {
+                anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_fall"));
+            }
+        }
+        else if (actions.Left || actions.Right)
         {
             anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_run"));
-            tf.Scale.x = (actions.Left) ? -1.0f : 1.0f;
         }
         else
         {
             anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
+        }
+
+        if (actions.Left) 
+        {
+            tf.Scale.x = -1.0f;
+        }
+        else if (actions.Right) 
+        {
+            tf.Scale.x = 1.0f;
         }
     }
 

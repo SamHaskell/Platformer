@@ -19,7 +19,8 @@ class Entity {
         CActions,
         CSpriteAnimator,
         CSprite,
-        CPlayerActions
+        CPlayerActions,
+        CGravity
     >;
 
     public:
