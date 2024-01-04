@@ -27,11 +27,21 @@ struct AABB
     f32 h;
 };
 
-/*
-    y = mx + c
-*/
-struct Line2D
+struct Ray
 {
-    f32 m;
-    f32 c;
+    Vec2 Origin;
+    Vec2 Direction;
+
+    Ray(Vec2 origin, Vec2 direction)
+        : Origin(origin), Direction(direction) 
+    {
+        Direction.NormaliseInPlace();
+    }
+};
+
+struct RaycastHit
+{
+    Vec2 Point;
+    Vec2 Normal;
+    f32 Distance;
 };

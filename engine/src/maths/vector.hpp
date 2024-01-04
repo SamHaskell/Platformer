@@ -20,6 +20,8 @@ struct Vec2
     }
     Vec2 operator*(const f32 val) const { return {x * val, y * val}; }
     Vec2 operator*(const Vec2 &v) const { return {x * v.x, y * v.y}; }
+    Vec2 operator/(const Vec2 &v) const { return {x / v.x, y / v.y}; }
+
     void operator+=(const f32 val)
     {
         x += val;
