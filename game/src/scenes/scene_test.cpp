@@ -374,7 +374,7 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
 
             playerVelocity.Velocity += hit.Normal * Vec2::Dot(hit.Normal, playerVelocity.Velocity) * -1.0f * (1.0f - hit.Distance);
 
-            NT_INFO("Hit: Position(%1.f. %1.f), Normal(%1.f, %1.f), Dist(%1.f)", hit.Point.x, hit.Point.y, hit.Normal.x, hit.Normal.y, hit.Distance);
+            // NT_INFO("Hit: Position(%1.f. %1.f), Normal(%1.f, %1.f), Dist(%1.f)", hit.Point.x, hit.Point.y, hit.Normal.x, hit.Normal.y, hit.Distance);
         }
     }
 }
