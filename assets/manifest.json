@@ -16,7 +16,7 @@
             "animation" : {
                 "texture-source" : "tex_player",
                 "frames" : 4,
-                "framerate" : 6,
+                "framerate" : 4,
                 "width" : 32,
                 "height" : 32,
                 "offset-x" : 0,
@@ -29,7 +29,7 @@
             "animation" : {
                 "texture-source" : "tex_player",
                 "frames" : 6,
-                "framerate" : 6,
+                "framerate" : 4,
                 "width" : 32,
                 "height" : 32,
                 "offset-x" : 0,

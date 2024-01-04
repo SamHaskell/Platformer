@@ -64,9 +64,10 @@ struct CActions : Component
 struct CSprite : Component
 {
     sf::Sprite Sprite;
+    f32 Depth = 0.0f;
 
     CSprite() = default;
-    CSprite(sf::Texture& source, i32 srcx, i32 srcy, i32 srcw, i32 srch) {
+    CSprite(sf::Texture& source, i32 srcx, i32 srcy, i32 srcw, i32 srch, f32 depth) : Depth(depth) {
         Sprite = sf::Sprite(source, sf::IntRect(
             srcx, srcy,
             srcw, srch

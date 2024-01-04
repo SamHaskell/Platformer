@@ -82,7 +82,7 @@ void SceneTest::Render(sf::RenderWindow *window)
     window->setView(view);
 
     RenderSprites(window);
-    RenderDebugColliders(window);
+    // RenderDebugColliders(window);
 }
 
 void SceneTest::DrawGUI()
@@ -153,7 +153,7 @@ void SceneTest::SpawnPlayer()
 
     m_Player->AddComponent<CSprite>(
         ResourceManager::GetInstance().GetTexture("tex_player"),
-        0, 0, 32, 32);
+        0, 0, 32, 32, 2.0f);
 
     m_Player->AddComponent<CPlayerActions>();
 
@@ -203,7 +203,7 @@ void SceneTest::UpdatePlayerMovement(f64 dt)
 
     if (actions.Jump)
     {
-        vel.Velocity.y = 100.0f;
+        vel.Velocity.y = 200.0f;
     }
 
     if (actions.Left)
@@ -381,13 +381,14 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
 
 void SceneTest::RenderSprites(sf::RenderWindow *window)
 {
+    std::vector<CSprite*> sprites;
+    
     for (auto e : m_World.GetEntities())
     {
         if (e->HasComponent<CSprite>() && e->HasComponent<CTransform>())
         {
-            auto& tf = e->GetComponent<CTransform>();
             auto& sprite = e->GetComponent<CSprite>();
-
+            auto& tf = e->GetComponent<CTransform>();
             Vec2 pos = tf.Position;
             f32 rot = tf.Rotation;
             Vec2 scale = tf.Scale;
@@ -395,8 +396,17 @@ void SceneTest::RenderSprites(sf::RenderWindow *window)
             sprite.Sprite.setPosition(pos.x, 180 - pos.y);
             sprite.Sprite.setRotation(rot);
             sprite.Sprite.setScale(scale.x, scale.y);
-            window->draw(sprite.Sprite);
+
+            sprites.push_back(&sprite);
         }
+    }
+
+    std::sort(sprites.begin(), sprites.end(), [](CSprite* a, CSprite* b) {
+        return a->Depth < b->Depth;
+    });
+
+    for (auto sprite : sprites) {
+        window->draw(sprite->Sprite);
     }
 }
 
@@ -494,7 +504,8 @@ void SceneTest::LoadLevel(const std::string &path)
                 tile.OffsetX,
                 tile.OffsetY,
                 tile.Width,
-                tile.Height
+                tile.Height,
+                1.0f
             );
             e->AddComponent<CBoxCollider>(Vec2{(f32)tile.Width, (f32)tile.Height});
         }
@@ -503,6 +514,28 @@ void SceneTest::LoadLevel(const std::string &path)
     if (data.contains("decorations"))
     {
         // Instantiate decoration entities
+
+        json decs = data["decorations"];
+        for (auto& [key, value] : decs.items())
+        {
+            std::string type = value["type"];
+            TileData tile = tileData[type];
+
+            Vec2 position;
+            position.x = 8.0f + (f32)value["x"] * tile.Width;
+            position.y = (f32)value["y"] * tile.Height;
+
+            auto e = m_World.AddEntity("decoration");
+            e->AddComponent<CTransform>(position, Vec2{1.0f, 1.0f}, 0.0f);
+            e->AddComponent<CSprite>(
+                ResourceManager::GetInstance().GetTexture(tile.TextureSource),
+                tile.OffsetX,
+                tile.OffsetY,
+                tile.Width,
+                tile.Height,
+                0.0f
+            );
+        }
     }
 
 }
