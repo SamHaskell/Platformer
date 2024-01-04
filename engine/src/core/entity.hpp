@@ -20,7 +20,8 @@ class Entity {
         CSpriteAnimator,
         CSprite,
         CPlayerActions,
-        CGravity
+        CGravity,
+        CBoxCollider
     >;
 
     public:

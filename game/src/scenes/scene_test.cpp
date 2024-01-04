@@ -25,6 +25,18 @@ void SceneTest::OnSceneEnter()
     NT_INFO("Entering test scene.");
 
     SpawnPlayer();
+
+    // Spawn some test tiles
+
+    for (i32 i = 0; i < 20; i++) {
+        auto e = m_World.AddEntity("tile");
+        e->AddComponent<CTransform>(Vec2{8.0f + 16.0f * i, 0.0f}, Vec2{1.0, 1.0}, 0.0f);
+        e->AddComponent<CSprite>(
+            ResourceManager::GetInstance().GetTexture("tex_tilesheet"),
+            48, 16, 16, 16
+        );
+        e->AddComponent<CBoxCollider>(Vec2{16, 16});
+    }
 }
 
 void SceneTest::OnSceneExit()
@@ -62,7 +74,7 @@ void SceneTest::Update(f64 dt)
 {
     m_World.Update();
 
-    UpdateGravity(dt);
+    // UpdateGravity(dt);
     UpdatePlayerMovement(dt);
     UpdatePositions(dt);
     UpdatePlayerAnimationState(dt);
@@ -71,7 +83,11 @@ void SceneTest::Update(f64 dt)
 
 void SceneTest::Render(sf::RenderWindow *window)
 {
+    sf::View view(sf::FloatRect(0, 0, 320, 180));
+    window->setView(view);
+
     RenderSprites(window);
+    RenderDebugColliders(window);
 }
 
 void SceneTest::DrawGUI()
@@ -136,7 +152,7 @@ void SceneTest::SpawnPlayer()
 
     m_Player = m_World.AddEntity("player");
 
-    m_Player->AddComponent<CTransform>(Vec2{0, 0}, Vec2{1, 1}, 0.0f);
+    m_Player->AddComponent<CTransform>(Vec2{16, 16}, Vec2{1, 1}, 0.0f);
 
     m_Player->AddComponent<CVelocity>(Vec2{0, 0}, 0.0f);
 
@@ -218,7 +234,7 @@ void SceneTest::UpdatePlayerAnimationState(f64 dt)
         auto& anim = m_Player->GetComponent<CSpriteAnimator>();
         auto& tf = m_Player->GetComponent<CTransform>();
 
-        if (m_Player->HasComponent<CVelocity>())
+        if (m_Player->HasComponent<CVelocity>() && m_Player->GetComponent<CVelocity>().Velocity.y != 0.0f)
         {
             auto& vel = m_Player->GetComponent<CVelocity>();
             if (vel.Velocity.y > 0.0f)
@@ -302,9 +318,6 @@ void SceneTest::UpdateAnimations(f64 dt)
 
 void SceneTest::RenderSprites(sf::RenderWindow *window)
 {
-    sf::View view(sf::FloatRect(0, 0, 320, 180));
-    window->setView(view);
-
     for (auto e : m_World.GetEntities())
     {
         if (e->HasComponent<CSprite>() && e->HasComponent<CTransform>())
@@ -320,6 +333,31 @@ void SceneTest::RenderSprites(sf::RenderWindow *window)
             sprite.Sprite.setRotation(rot);
             sprite.Sprite.setScale(scale.x, scale.y);
             window->draw(sprite.Sprite);
+        }
+    }
+}
+
+void SceneTest::RenderDebugColliders(sf::RenderWindow *window)
+{
+    for (auto e : m_World.GetEntities())
+    {
+        if (e->HasComponent<CBoxCollider>() && e->HasComponent<CTransform>())
+        {
+            auto& tf = e->GetComponent<CTransform>();
+            auto& collider = e->GetComponent<CBoxCollider>();
+
+            Vec2 pos = tf.Position;
+            Vec2 scale = tf.Scale;
+            Vec2 size = collider.Size;
+
+            sf::RectangleShape rect(sf::Vector2f(size.x, size.y));
+            rect.setFillColor(sf::Color::Transparent);
+            rect.setOutlineColor(sf::Color::Red);
+            rect.setOutlineThickness(0.2f);
+            rect.setOrigin(size.x / 2.0f, size.y);
+            rect.setPosition(pos.x, 180 - pos.y);
+            rect.setScale(scale.x, scale.y);
+            window->draw(rect);
         }
     }
 }

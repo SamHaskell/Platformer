@@ -121,3 +121,11 @@ struct CGravity : Component
     CGravity() = default;
     CGravity(f32 gravity) : Gravity(gravity) {}
 };
+
+struct CBoxCollider : Component
+{
+    Vec2 Size = {1.0, 1.0};
+
+    CBoxCollider() = default;
+    CBoxCollider(Vec2 size) : Size(size) {}
+};
