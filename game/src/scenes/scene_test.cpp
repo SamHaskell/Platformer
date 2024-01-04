@@ -91,7 +91,7 @@ void SceneTest::Update(f64 dt)
     UpdatePlayerAnimationState(dt);
     UpdateAnimations(dt);
 
-    PhysicsResolveCollisions(dt);
+    PhysicsCheckCollisions(dt);
 }
 
 void SceneTest::Render(sf::RenderWindow *window)
@@ -340,58 +340,56 @@ void SceneTest::UpdateAnimations(f64 dt)
     }
 }
 
-void SceneTest::PhysicsResolveCollisions(f64 dt)
+void SceneTest::PhysicsCheckCollisions(f64 dt)
 {
     // Check collisions between player and tiles
 
-    if (m_Player->HasComponent<CBoxCollider>() && m_Player->HasComponent<CTransform>())
+    if (m_Player->HasComponent<CBoxCollider>() && m_Player->HasComponent<CTransform>() && m_Player->HasComponent<CVelocity>())
     {
-        Ray ray(m_Player->GetComponent<CTransform>().Position, Vec2{0.0f, 1.0f});
+        auto& playerCollider = m_Player->GetComponent<CBoxCollider>();
+        auto& playerTransform = m_Player->GetComponent<CTransform>();
+        auto& playerVelocity = m_Player->GetComponent<CVelocity>();
 
-        RaycastHit hit;
-        if (Physics2D::Raycast(ray, AABB{160, 64, 16, 16}, hit))
-        {
-            NT_INFO("Raycast hit: (%.1f, %.1f) dist: (%.1f) normal: (%.1f, %.1f)", hit.Point.x, hit.Point.y, hit.Distance, hit.Normal.x, hit.Normal.y);
-        } else {
-            NT_INFO("Raycast miss");
-        }
-
-        // auto& playerCollider = m_Player->GetComponent<CBoxCollider>();
-        // auto& playerTransform = m_Player->GetComponent<CTransform>();
-
-        // AABB playerBox = {
-        //     playerTransform.Position.x - playerCollider.Size.x / 2.0f,
-        //     playerTransform.Position.y,
-        //     playerCollider.Size.x,
-        //     playerCollider.Size.y
-        // };
+        AABB playerBox = {
+            playerTransform.Position.x - playerCollider.Size.x / 2.0f,
+            playerTransform.Position.y,
+            playerCollider.Size.x,
+            playerCollider.Size.y
+        };
 
         // NT_INFO("Player box: (%.1f, %.1f, %.1f, %.1f)", playerBox.x, playerBox.y, playerBox.w, playerBox.h);
 
-        // for (auto e : m_World.GetEntitiesWithTag("tile"))
-        // {
-        //     if (e->HasComponent<CBoxCollider>() && e->HasComponent<CTransform>())
-        //     {
-        //         auto& collider = e->GetComponent<CBoxCollider>();
-        //         auto& tf = e->GetComponent<CTransform>();
+        for (auto e : m_World.GetEntitiesWithTag("tile"))
+        {
+            if (e->HasComponent<CBoxCollider>() && e->HasComponent<CTransform>())
+            {
+                auto& collider = e->GetComponent<CBoxCollider>();
+                auto& tf = e->GetComponent<CTransform>();
 
-        //         AABB tileBox = {
-        //             tf.Position.x - collider.Size.x / 2.0f,
-        //             tf.Position.y,
-        //             collider.Size.x,
-        //             collider.Size.y
-        //         };
+                AABB tileBox = {
+                    tf.Position.x - collider.Size.x / 2.0f,
+                    tf.Position.y,
+                    collider.Size.x,
+                    collider.Size.y
+                };
 
-        //         NT_INFO("Tile box: (%.1f, %.1f, %.1f, %.1f)", tileBox.x, tileBox.y, tileBox.w, tileBox.h);
+                // NT_INFO("Tile box: (%.1f, %.1f, %.1f, %.1f)", tileBox.x, tileBox.y, tileBox.w, tileBox.h);
 
-        //         AABB overlap {};
-
-        //         if (Physics2D::OverlapAABB(playerBox, tileBox, overlap))
-        //         {
-        //             NT_INFO("Overlap box: (%.1f, %.1f, %.1f, %.1f)", overlap.x, overlap.y, overlap.w, overlap.h);
-        //         }
-        //     }
-        // }
+                RaycastHit hit {};
+                if (Physics2D::AABBcast(
+                        playerBox, 
+                        Vec2::Normalised(playerVelocity.Velocity), 
+                        tileBox, 
+                        hit, 
+                        Vec2::Magnitude(playerVelocity.Velocity) * dt
+                    )
+                )
+                {
+                    playerTransform.Position = hit.Point + hit.Normal * playerCollider.Size;
+                    NT_INFO("Boxcast Hit! (%.1f, %.1f), (%.1f, %.1f)", hit.Point.x, hit.Point.y, hit.Normal.x, hit.Normal.y);
+                }
+            }
+        }
     }
 }
 

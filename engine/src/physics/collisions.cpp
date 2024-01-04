@@ -38,11 +38,11 @@ Ray RayFromTo(Vec2 from, Vec2 to)
     return Ray(from, to - from);
 }
 
-bool Physics2D::Raycast(Ray ray, AABB a, RaycastHit& outHit)
+bool Physics2D::Raycast(Ray ray, AABB target, RaycastHit& outHit, f32 maxDistance)
 {
-    Vec2 targetPos = {a.x, a.y};
+    Vec2 targetPos = {target.x, target.y};
     Vec2 tNear = (targetPos - ray.Origin) / ray.Direction;
-    Vec2 tFar = (targetPos + Vec2{a.w, a.h} - ray.Origin) / ray.Direction;
+    Vec2 tFar = (targetPos + Vec2{target.w, target.h} - ray.Origin) / ray.Direction;
 
     if (tNear.x > tFar.x) { std::swap(tNear.x, tFar.x); }
 
@@ -81,5 +81,15 @@ bool Physics2D::Raycast(Ray ray, AABB a, RaycastHit& outHit)
         }
     }
 
-    return true;
+    return (tHitNear <= maxDistance);
+}
+
+bool Physics2D::AABBcast(AABB source, Vec2 direction, AABB target, RaycastHit& outHit, f32 maxDistance)
+{
+    Ray ray = Ray({source.x + source.w/2.0f, source.y + source.h/2.0f}, direction);
+    target.x -= source.w/2.0f;
+    target.y -= source.h/2.0f;
+    target.w += source.w;
+    target.h += source.h;
+    return Raycast(ray, target, outHit, maxDistance);
 }
