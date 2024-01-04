@@ -8,7 +8,12 @@ f32 Vec2::SqrMagnitude(const Vec2 &v)
 
 f32 Vec2::Magnitude(const Vec2 &v)
 {
-    return sqrtf(SqrMagnitude(v));
+    if (SqrMagnitude(v) == 0.0f)
+    {
+        return 0.0f;
+    } else {
+        return sqrtf(SqrMagnitude(v));
+    }
 }
 
 Vec2 Vec2::Normalised(const Vec2 &v)

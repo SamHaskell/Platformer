@@ -11,5 +11,5 @@ namespace Physics2D {
 
     Ray RayFromTo(Vec2 from, Vec2 to);
     bool Raycast(Ray ray, AABB target, RaycastHit& outHit, f32 maxDistance = 1.0f);
-    bool AABBcast(AABB source, Vec2 direction, AABB target, RaycastHit& outHit, f32 maxDistance = 1.0f);
+    bool AABBcast(AABB source, AABB target, Vec2 direction, RaycastHit& outHit, f32 maxDistance = 1.0f);
 }

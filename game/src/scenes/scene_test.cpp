@@ -29,19 +29,29 @@ void SceneTest::OnSceneEnter()
 
     // Spawn some test tiles
 
-    // for (i32 i = 0; i < 20; i++) {
-    //     auto e = m_World.AddEntity("tile");
-    //     e->AddComponent<CTransform>(Vec2{8.0f + 16.0f * i, 0.0f}, Vec2{1.0, 1.0}, 0.0f);
-    //     e->AddComponent<CSprite>(
-    //         ResourceManager::GetInstance().GetTexture("tex_tilesheet"),
-    //         48, 16, 16, 16
-    //     );
-    //     e->AddComponent<CBoxCollider>(Vec2{16, 16});
-    // }
-
-    for (i32 i = 10; i < 11; i++) {
+    for (i32 i = 0; i < 20; i++) {
         auto e = m_World.AddEntity("tile");
-        e->AddComponent<CTransform>(Vec2{8.0f + 16.0f * i, 64.0f}, Vec2{1.0, 1.0}, 0.0f);
+        e->AddComponent<CTransform>(Vec2{8.0f + 16.0f * i, 0.0f}, Vec2{1.0, 1.0}, 0.0f);
+        e->AddComponent<CSprite>(
+            ResourceManager::GetInstance().GetTexture("tex_tilesheet"),
+            48, 16, 16, 16
+        );
+        e->AddComponent<CBoxCollider>(Vec2{16, 16});
+    }
+
+    for (i32 i = 8; i < 14; i++) {
+        auto e = m_World.AddEntity("tile");
+        e->AddComponent<CTransform>(Vec2{8.0f + 16.0f * i, 16.0f}, Vec2{1.0, 1.0}, 0.0f);
+        e->AddComponent<CSprite>(
+            ResourceManager::GetInstance().GetTexture("tex_tilesheet"),
+            48, 16, 16, 16
+        );
+        e->AddComponent<CBoxCollider>(Vec2{16, 16});
+    }
+
+    for (i32 i = 0; i < 20; i++) {
+        auto e = m_World.AddEntity("tile");
+        e->AddComponent<CTransform>(Vec2{8.0f + 16.0f * i, 128.0f}, Vec2{1.0, 1.0}, 0.0f);
         e->AddComponent<CSprite>(
             ResourceManager::GetInstance().GetTexture("tex_tilesheet"),
             48, 16, 16, 16
@@ -87,11 +97,13 @@ void SceneTest::Update(f64 dt)
 
     UpdateGravity(dt);
     UpdatePlayerMovement(dt);
-    UpdatePositions(dt);
-    UpdatePlayerAnimationState(dt);
-    UpdateAnimations(dt);
 
     PhysicsCheckCollisions(dt);
+    
+    UpdatePositions(dt);
+    
+    UpdatePlayerAnimationState(dt);
+    UpdateAnimations(dt);
 }
 
 void SceneTest::Render(sf::RenderWindow *window)
@@ -165,7 +177,7 @@ void SceneTest::SpawnPlayer()
 
     m_Player = m_World.AddEntity("player");
 
-    m_Player->AddComponent<CTransform>(Vec2{16, 16}, Vec2{1, 1}, 0.0f);
+    m_Player->AddComponent<CTransform>(Vec2{16, 18}, Vec2{1, 1}, 0.0f);
 
     m_Player->AddComponent<CVelocity>(Vec2{0, 0}, 0.0f);
 
@@ -178,7 +190,7 @@ void SceneTest::SpawnPlayer()
     m_Player->AddComponent<CSpriteAnimator>(
         ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
 
-    m_Player->AddComponent<CGravity>(300.0f);
+    m_Player->AddComponent<CGravity>(480.0f);
 
     m_Player->AddComponent<CBoxCollider>(Vec2{24, 22});
 }
@@ -218,7 +230,6 @@ void SceneTest::UpdatePlayerMovement(f64 dt)
     auto& vel = m_Player->GetComponent<CVelocity>();
 
     vel.Velocity.x = 0.0f;
-    vel.Velocity.y = 0.0f;
 
     if (actions.Jump)
     {
@@ -233,15 +244,6 @@ void SceneTest::UpdatePlayerMovement(f64 dt)
     {
         vel.Velocity.x += 100.0f;
     }
-    if (actions.Up)
-    {
-        vel.Velocity.y += 100.0f;
-    }
-    if (actions.Down)
-    {
-        vel.Velocity.y -= 100.0f;
-    }
-
 }
 
 void SceneTest::UpdatePlayerAnimationState(f64 dt)
@@ -258,14 +260,14 @@ void SceneTest::UpdatePlayerAnimationState(f64 dt)
         auto& anim = m_Player->GetComponent<CSpriteAnimator>();
         auto& tf = m_Player->GetComponent<CTransform>();
 
-        if (m_Player->HasComponent<CVelocity>() && m_Player->GetComponent<CVelocity>().Velocity.y != 0.0f)
+        if (m_Player->HasComponent<CVelocity>() && fabsf(m_Player->GetComponent<CVelocity>().Velocity.y) > 10.0f)
         {
             auto& vel = m_Player->GetComponent<CVelocity>();
-            if (vel.Velocity.y > 0.0f)
+            if (vel.Velocity.y > 1.0f)
             {
                 anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_rise"));
             }
-            else if (vel.Velocity.y < 0.0f)
+            else if (vel.Velocity.y < 1.0f)
             {
                 anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_fall"));
             }
@@ -357,7 +359,7 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
             playerCollider.Size.y
         };
 
-        // NT_INFO("Player box: (%.1f, %.1f, %.1f, %.1f)", playerBox.x, playerBox.y, playerBox.w, playerBox.h);
+        std::vector<RaycastHit> hits;
 
         for (auto e : m_World.GetEntitiesWithTag("tile"))
         {
@@ -373,22 +375,34 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
                     collider.Size.y
                 };
 
-                // NT_INFO("Tile box: (%.1f, %.1f, %.1f, %.1f)", tileBox.x, tileBox.y, tileBox.w, tileBox.h);
-
                 RaycastHit hit {};
                 if (Physics2D::AABBcast(
                         playerBox, 
-                        Vec2::Normalised(playerVelocity.Velocity), 
                         tileBox, 
+                        Vec2::Normalised(playerVelocity.Velocity), 
                         hit, 
                         Vec2::Magnitude(playerVelocity.Velocity) * dt
                     )
                 )
                 {
-                    playerTransform.Position = hit.Point + hit.Normal * playerCollider.Size;
-                    NT_INFO("Boxcast Hit! (%.1f, %.1f), (%.1f, %.1f)", hit.Point.x, hit.Point.y, hit.Normal.x, hit.Normal.y);
+                    hits.push_back(hit);
                 }
             }
+        }
+
+        std::sort(hits.begin(), hits.end(), [](RaycastHit a, RaycastHit b) {
+            return a.Distance < b.Distance;
+        });
+
+        for (auto hit : hits)
+        {   
+            if (hit.Distance < 0.0f)
+            {
+                playerTransform.Position = hit.Point + hit.Normal * 1.0f;
+            } else {
+                playerVelocity.Velocity += hit.Normal * Vec2::Dot(hit.Normal, playerVelocity.Velocity) * -1.0f * (1.0f - hit.Distance);
+            }
+
         }
     }
 }

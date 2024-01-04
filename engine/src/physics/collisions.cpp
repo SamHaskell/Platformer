@@ -81,10 +81,10 @@ bool Physics2D::Raycast(Ray ray, AABB target, RaycastHit& outHit, f32 maxDistanc
         }
     }
 
-    return (tHitNear <= maxDistance);
+    return (tHitNear < maxDistance);
 }
 
-bool Physics2D::AABBcast(AABB source, Vec2 direction, AABB target, RaycastHit& outHit, f32 maxDistance)
+bool Physics2D::AABBcast(AABB source, AABB target, Vec2 direction, RaycastHit& outHit, f32 maxDistance)
 {
     Ray ray = Ray({source.x + source.w/2.0f, source.y + source.h/2.0f}, direction);
     target.x -= source.w/2.0f;
