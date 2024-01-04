@@ -23,6 +23,9 @@ class SceneTest : public Scene {
         void UpdatePlayerMovement(f64 dt);
         void UpdatePlayerAnimationState(f64 dt);
         void UpdateAnimations(f64 dt);
+
+        void PhysicsResolveCollisions(f64 dt);
+
         void RenderSprites(sf::RenderWindow* window);
         void RenderDebugColliders(sf::RenderWindow *window);
 

@@ -43,7 +43,6 @@ void World::Update() {
 std::shared_ptr<Entity> World::AddEntity(const std::string& tag) {
     auto e = std::shared_ptr<Entity>(new Entity(tag, m_NextID++));
     m_EntitiesToAdd.push_back(e);
-    m_EntityMap[tag].push_back(e);
     return e;
 }
 

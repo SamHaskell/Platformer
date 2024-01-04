@@ -7,21 +7,21 @@ bool Physics2D::OverlapCircle(Circle a, Circle b)
 
 bool Physics2D::OverlapAABB(AABB a, AABB b)
 {
-    bool colliding = false;
-    colliding |= (b.w + a.w) / 2.0f > fabsf(b.x - a.x);
-    colliding |= (b.h + a.h) / 2.0f > fabsf(b.y - a.y);
+    bool colliding = true;
+
+    // Simpler AABB collision check that does not yield any collision data.
+
+    colliding &= (a.x < b.x + b.w && a.x + a.w > b.x) || (a.x + a.w > b.x && a.x < b.x + b.w);
+    colliding &= (a.y < b.y + b.h && a.y + a.h > b.y) || (a.y + a.h > b.y && a.y < b.y + b.h);
+
     return colliding;
 }
 
 bool Physics2D::OverlapAABB(AABB a, AABB b, AABB &outOverlap)
-{
-    outOverlap.w = (b.w + a.w) / 2.0f - fabsf(b.x - a.x);
-    outOverlap.h = (b.h + a.h) / 2.0f - fabsf(b.y - a.y);
-    outOverlap.x = (b.x < a.x) ? (b.x + (b.w / 2.0f)) - (outOverlap.w / 2.0f) : (b.x - (b.w / 2.0f)) + (outOverlap.w / 2.0f);
-    outOverlap.y = (b.y < a.y) ? (b.y + (b.h / 2.0f)) - (outOverlap.h / 2.0f) : (b.y - (b.h / 2.0f)) + (outOverlap.h / 2.0f);
-    
+{   
     bool colliding = false;
-    colliding |= outOverlap.w > 0.0f;
-    colliding |= outOverlap.h > 0.0f;
+
+    // TODO: Implement AABB collision detection that yields the overlap rect.
+
     return colliding;
 }
