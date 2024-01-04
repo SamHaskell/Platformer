@@ -190,7 +190,7 @@ void SceneTest::SpawnPlayer()
     m_Player->AddComponent<CSpriteAnimator>(
         ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
 
-    m_Player->AddComponent<CGravity>(480.0f);
+    m_Player->AddComponent<CGravity>(500.0f);
 
     m_Player->AddComponent<CBoxCollider>(Vec2{24, 22});
 }
@@ -396,13 +396,14 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
 
         for (auto hit : hits)
         {   
-            if (hit.Distance < 0.0f)
+            if (hit.Distance <= 0.f)
             {
                 playerTransform.Position = hit.Point + hit.Normal * 1.0f;
-            } else {
-                playerVelocity.Velocity += hit.Normal * Vec2::Dot(hit.Normal, playerVelocity.Velocity) * -1.0f * (1.0f - hit.Distance);
             }
 
+            playerVelocity.Velocity += hit.Normal * Vec2::Dot(hit.Normal, playerVelocity.Velocity) * -1.0f * (1.0f - hit.Distance);
+
+            NT_INFO("Hit: Position(%1.f. %1.f), Normal(%1.f, %1.f), Dist(%1.f)", hit.Point.x, hit.Point.y, hit.Normal.x, hit.Normal.y, hit.Distance);
         }
     }
 }

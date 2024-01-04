@@ -41,8 +41,12 @@ Ray RayFromTo(Vec2 from, Vec2 to)
 bool Physics2D::Raycast(Ray ray, AABB target, RaycastHit& outHit, f32 maxDistance)
 {
     Vec2 targetPos = {target.x, target.y};
+
     Vec2 tNear = (targetPos - ray.Origin) / ray.Direction;
     Vec2 tFar = (targetPos + Vec2{target.w, target.h} - ray.Origin) / ray.Direction;
+
+    if (std::isnan(tNear.x) || std::isnan(tNear.y)) { return false; }
+    if (std::isnan(tFar.x) || std::isnan(tFar.y)) { return false; }
 
     if (tNear.x > tFar.x) { std::swap(tNear.x, tFar.x); }
 
