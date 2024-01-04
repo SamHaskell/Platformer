@@ -6,6 +6,9 @@
 
 #include "imgui.h"
 
+#include <map>
+#include <fstream>
+
 SceneTest::SceneTest(const Game *game) : Scene(game)
 {
 }
@@ -21,43 +24,10 @@ void SceneTest::OnSceneEnter()
 
     RegisterAction(sf::Keyboard::Space, "Jump");
 
-    // Load a level.
-
     NT_INFO("Entering test scene.");
 
+    LoadLevel("assets/levels/level_1.json");
     SpawnPlayer();
-
-    // Spawn some test tiles
-
-    for (i32 i = 0; i < 20; i++) {
-        auto e = m_World.AddEntity("tile");
-        e->AddComponent<CTransform>(Vec2{8.0f + 16.0f * i, 0.0f}, Vec2{1.0, 1.0}, 0.0f);
-        e->AddComponent<CSprite>(
-            ResourceManager::GetInstance().GetTexture("tex_tilesheet"),
-            48, 16, 16, 16
-        );
-        e->AddComponent<CBoxCollider>(Vec2{16, 16});
-    }
-
-    for (i32 i = 8; i < 14; i++) {
-        auto e = m_World.AddEntity("tile");
-        e->AddComponent<CTransform>(Vec2{8.0f + 16.0f * i, 16.0f}, Vec2{1.0, 1.0}, 0.0f);
-        e->AddComponent<CSprite>(
-            ResourceManager::GetInstance().GetTexture("tex_tilesheet"),
-            48, 16, 16, 16
-        );
-        e->AddComponent<CBoxCollider>(Vec2{16, 16});
-    }
-
-    for (i32 i = 0; i < 20; i++) {
-        auto e = m_World.AddEntity("tile");
-        e->AddComponent<CTransform>(Vec2{8.0f + 16.0f * i, 128.0f}, Vec2{1.0, 1.0}, 0.0f);
-        e->AddComponent<CSprite>(
-            ResourceManager::GetInstance().GetTexture("tex_tilesheet"),
-            48, 16, 16, 16
-        );
-        e->AddComponent<CBoxCollider>(Vec2{16, 16});
-    }
 }
 
 void SceneTest::OnSceneExit()
@@ -177,7 +147,7 @@ void SceneTest::SpawnPlayer()
 
     m_Player = m_World.AddEntity("player");
 
-    m_Player->AddComponent<CTransform>(Vec2{16, 18}, Vec2{1, 1}, 0.0f);
+    m_Player->AddComponent<CTransform>(Vec2{16, 16}, Vec2{1, 1}, 0.0f);
 
     m_Player->AddComponent<CVelocity>(Vec2{0, 0}, 0.0f);
 
@@ -396,9 +366,10 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
 
         for (auto hit : hits)
         {   
-            if (hit.Distance <= 0.f)
+            if (hit.Distance <= 0.0f)
             {
-                playerTransform.Position = hit.Point + hit.Normal * 1.0f;
+                playerTransform.Position = hit.Point + hit.Normal * 0.1f;
+                playerTransform.Position.y -= playerCollider.Size.y / 2.0f;
             }
 
             playerVelocity.Velocity += hit.Normal * Vec2::Dot(hit.Normal, playerVelocity.Velocity) * -1.0f * (1.0f - hit.Distance);
@@ -459,7 +430,79 @@ void SceneTest::LoadLevel(const std::string &path)
     m_World = World();
     NT_INFO("Loading level from file: %s", path.c_str());
 
-    // Load entities according to level file spec
+    std::ifstream file(path);
+    if (!file.is_open())
+    {
+        NT_ERROR("Failed to open level data from path: %s", path.c_str());
+        return;
+    }
 
+    json data = json::parse(file);
+
+    struct TileData {
+        std::string TextureSource;
+        u32 Width;
+        u32 Height;
+        i32 OffsetX;
+        i32 OffsetY;
+    };
+
+    std::map<std::string, TileData> tileData;
+
+    if (data.contains("tileset"))
+    {
+        // Process the tile types
+
+        json tileset = data["tileset"];
+        for (auto& [key, value] : tileset.items())
+        {
+            std::string name = value["name"];
+            std::string textureSource = value["texture-source"];
+            u32 width = value["width"];
+            u32 height = value["height"];
+            i32 offsetX = value["offset-x"];
+            i32 offsetY = value["offset-y"];
+
+            tileData[name] = {
+                textureSource,
+                width,
+                height,
+                offsetX,
+                offsetY
+            };
+        }
+    }
+
+    if (data.contains("tiles"))
+    {
+        // Instantiate tile entities
+
+        json tiles = data["tiles"];
+        for (auto& [key, value] : tiles.items())
+        {
+            std::string type = value["type"];
+            TileData tile = tileData[type];
+
+            Vec2 position;
+            position.x = 8.0f + (f32)value["x"] * tile.Width;
+            position.y = (f32)value["y"] * tile.Height;
+
+            auto e = m_World.AddEntity("tile");
+            e->AddComponent<CTransform>(position, Vec2{1.0f, 1.0f}, 0.0f);
+            e->AddComponent<CSprite>(
+                ResourceManager::GetInstance().GetTexture(tile.TextureSource),
+                tile.OffsetX,
+                tile.OffsetY,
+                tile.Width,
+                tile.Height
+            );
+            e->AddComponent<CBoxCollider>(Vec2{(f32)tile.Width, (f32)tile.Height});
+        }
+    }
+
+    if (data.contains("decorations"))
+    {
+        // Instantiate decoration entities
+    }
 
 }
