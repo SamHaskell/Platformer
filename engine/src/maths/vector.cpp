@@ -19,7 +19,12 @@ f32 Vec2::Magnitude(const Vec2 &v)
 Vec2 Vec2::Normalised(const Vec2 &v)
 {
     f32 normalisation = 1.0f / Magnitude(v);
-    return {v.x * normalisation, v.y * normalisation};
+    if (normalisation == 0.0f)
+    {
+        return {0.0f, 0.0f};
+    } else {
+        return {v.x * normalisation, v.y * normalisation};
+    }
 }
 
 f32 Vec2::Dot(const Vec2 &u, const Vec2 &v)

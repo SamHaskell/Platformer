@@ -319,16 +319,16 @@ void SceneTest::UpdatePlayerMovement(f64 dt)
 
     if (actions.Jump)
     {
-        vel.Velocity.y = 200.0f;
+        vel.Velocity.y = 400.0f;
     }
 
     if (actions.Left)
     {
-        vel.Velocity.x -= 100.0f;
+        vel.Velocity.x -= 200.0f;
     }
     if (actions.Right)
     {
-        vel.Velocity.x += 100.0f;
+        vel.Velocity.x += 200.0f;
     }
 }
 
@@ -429,6 +429,16 @@ void SceneTest::UpdateAnimations(f64 dt)
 
 void SceneTest::PhysicsCheckCollisions(f64 dt)
 {
+    /*
+        Swept AABB (interpolated) collision checks for player controller.
+        Intensive, but only performed for the player so probably fine.
+        If wanted to extend to some generic rigidbody then would certainly need to optimise, e.g. broadphase checks first.
+
+        Currently we check for collisions with all tiles, order hits based on distance and then 
+        iterate through a second time, running another collision check. This is to ensure
+        the player does not get stuck at boundaries between tiles.
+    */
+
     // Check collisions between player and tiles
 
     if (m_Player->HasComponent<CBoxCollider>() && m_Player->HasComponent<CTransform>() && m_Player->HasComponent<CVelocity>())
@@ -443,7 +453,12 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
             playerCollider.Size.x,
             playerCollider.Size.y};
 
-        std::vector<RaycastHit> hits;
+        struct BoxHit {
+            AABB box;
+            RaycastHit hit;
+        };
+
+        std::vector<BoxHit> hits;
 
         for (auto e : m_World.GetEntitiesWithTag("tile"))
         {
@@ -466,32 +481,35 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
                         hit,
                         Vec2::Magnitude(playerVelocity.Velocity) * dt))
                 {
-                    hits.push_back(hit);
+                    BoxHit boxhit = {tileBox, hit};
+                    hits.push_back(boxhit);
                 }
             }
         }
 
-        std::sort(hits.begin(), hits.end(), [](RaycastHit a, RaycastHit b)
-                  { return a.Distance < b.Distance; });
+        std::sort(hits.begin(), hits.end(), [](BoxHit a, BoxHit b)
+                  { return a.hit.Distance < b.hit.Distance; });
 
         for (auto hit : hits)
         {
-            if (hit.Distance <= 0.0f)
+            RaycastHit second_hit{};
+            if (Physics2D::AABBcast(
+                    playerBox,
+                    hit.box,
+                    Vec2::Normalised(playerVelocity.Velocity),
+                    second_hit,
+                    Vec2::Magnitude(playerVelocity.Velocity) * dt))
             {
-                playerTransform.Position = hit.Point + hit.Normal * 0.1f;
-                playerTransform.Position.y -= playerCollider.Size.y / 2.0f;
-            }
-            else {
-                playerVelocity.Velocity += hit.Normal * Vec2::Dot(hit.Normal, playerVelocity.Velocity) * -1.0f * (1.0f - hit.Distance);
-            }
-            
-            if (hit.Distance < 0.0f)
-            {
-                NT_INFO("Hit: Position(%1.f. %1.f), Normal(%1.f, %1.f), Dist(%3.f)", hit.Point.x, hit.Point.y, hit.Normal.x, hit.Normal.y, hit.Distance);
 
-                NT_INFO("Player Position(%1.f, %1.f), Velocity(%1.f, %1.f)", playerTransform.Position.x, playerTransform.Position.y, playerVelocity.Velocity.x, playerVelocity.Velocity.y);
-            }
+                if (second_hit.Distance <= 0.0f)
+                {
+                    playerTransform.Position = second_hit.Point + second_hit.Normal * 0.1f;
+                    playerTransform.Position.y -= playerCollider.Size.y / 2.0f;
+                }
 
+                Vec2 flippedNormal = Vec2{second_hit.Normal.y, second_hit.Normal.x};
+                playerVelocity.Velocity = flippedNormal * Vec2::Dot(flippedNormal, playerVelocity.Velocity);
+            }
         }
     }
 }
