@@ -104,8 +104,11 @@ void SceneTest::Update(f64 dt)
 
 void SceneTest::Render(sf::RenderWindow *window)
 {
-    sf::View view(sf::FloatRect(0, 0, 320, 180));
-    window->setView(view);
+    // sf::View view(sf::FloatRect(0, 0, 320, 180));
+    Vec2 playerPos = m_Player->GetComponent<CTransform>().Position;
+    m_Camera.setSize(640, 360);
+    m_Camera.setCenter((i32)playerPos.x, 360 - (i32)playerPos.y);
+    window->setView(m_Camera);
 
     if (m_SystemToggles.RenderSprites)
     {
@@ -116,6 +119,8 @@ void SceneTest::Render(sf::RenderWindow *window)
     {
         DebugRenderColliders(window);
     }
+
+    window->setView(window->getDefaultView());
 }
 
 void SceneTest::DrawGUI()
@@ -459,7 +464,7 @@ void SceneTest::RenderSprites(sf::RenderWindow *window)
             f32 rot = tf.Rotation;
             Vec2 scale = tf.Scale;
 
-            sprite.Sprite.setPosition(pos.x, 180 - pos.y);
+            sprite.Sprite.setPosition((i32)pos.x, 360 - (i32)pos.y);
             sprite.Sprite.setRotation(rot);
             sprite.Sprite.setScale(scale.x, scale.y);
 
@@ -492,9 +497,9 @@ void SceneTest::DebugRenderColliders(sf::RenderWindow *window)
             sf::RectangleShape rect(sf::Vector2f(size.x, size.y));
             rect.setFillColor(sf::Color::Transparent);
             rect.setOutlineColor(sf::Color::Red);
-            rect.setOutlineThickness(0.2f);
+            rect.setOutlineThickness(0.1f);
             rect.setOrigin(size.x / 2.0f, size.y);
-            rect.setPosition(pos.x, 180 - pos.y);
+            rect.setPosition((i32)pos.x, 360 - (i32)pos.y);
             rect.setScale(scale.x, scale.y);
             window->draw(rect);
         }
