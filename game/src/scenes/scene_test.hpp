@@ -17,6 +17,7 @@ class SceneTest : public Scene {
 
     private:
         void SpawnPlayer();
+        Vec2 ScreenToWorld(Vec2 screenPos);
 
         void UpdateGravity(f64 dt);
         void UpdatePositions(f64 dt);

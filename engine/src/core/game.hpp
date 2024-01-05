@@ -22,6 +22,8 @@ class Game {
 
         void ChangeScene(const std::string& name, std::shared_ptr<Scene> scene);
 
+        Vec2 GetWindowSize() const;
+
     private:
         Clock m_Clock;
         sf::Clock m_SFMLClock;

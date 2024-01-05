@@ -100,3 +100,8 @@ void Game::ChangeScene(const std::string& name, std::shared_ptr<Scene> scene) {
     
     m_Scenes[m_CurrentScene]->OnSceneEnter();
 }
+
+Vec2 Game::GetWindowSize() const
+{
+    return Vec2{(f32)m_Window->getSize().x, (f32)m_Window->getSize().y};
+}

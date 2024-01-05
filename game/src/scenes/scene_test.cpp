@@ -1,8 +1,9 @@
 #include "scene_test.hpp"
 
+#include "core/game.hpp"
+#include "core/resources.hpp"
 #include "maths/maths.hpp"
 #include "physics/collisions.hpp"
-#include "core/resources.hpp"
 
 #include "imgui.h"
 
@@ -100,11 +101,13 @@ void SceneTest::Update(f64 dt)
     {
         UpdateAnimations(dt);
     }
+
+    auto mousePos = ImGui::GetIO().MousePos;
+    NT_INFO("Mouse World Position: (%.1f, %.1f)", ScreenToWorld({mousePos.x, mousePos.y}).x, ScreenToWorld({mousePos.x, mousePos.y}).y);
 }
 
 void SceneTest::Render(sf::RenderWindow *window)
 {
-    // sf::View view(sf::FloatRect(0, 0, 320, 180));
     Vec2 playerPos = m_Player->GetComponent<CTransform>().Position;
     m_Camera.setSize(640, 360);
     m_Camera.setCenter((i32)playerPos.x, 360 - (i32)playerPos.y);
@@ -234,6 +237,18 @@ void SceneTest::SpawnPlayer()
     m_Player->AddComponent<CGravity>(500.0f);
 
     m_Player->AddComponent<CBoxCollider>(Vec2{24, 22});
+}
+
+Vec2 SceneTest::ScreenToWorld(Vec2 screenPos)
+{
+    Vec2 worldPos;
+    Vec2 windowSize = m_Game->GetWindowSize();
+    sf::Vector2f cameraPos = m_Camera.getCenter();
+    sf::Vector2f cameraSize = m_Camera.getSize();
+
+    worldPos.x = ((screenPos.x / windowSize.x) - 0.5f) * cameraSize.x + cameraPos.x;
+    worldPos.y = (0.5f + 1.0f - (screenPos.y / windowSize.y)) * cameraSize.y - cameraPos.y;
+    return worldPos;
 }
 
 void SceneTest::UpdatePositions(f64 dt)
@@ -497,7 +512,7 @@ void SceneTest::DebugRenderColliders(sf::RenderWindow *window)
             sf::RectangleShape rect(sf::Vector2f(size.x, size.y));
             rect.setFillColor(sf::Color::Transparent);
             rect.setOutlineColor(sf::Color::Red);
-            rect.setOutlineThickness(0.1f);
+            rect.setOutlineThickness(0.2f);
             rect.setOrigin(size.x / 2.0f, size.y);
             rect.setPosition((i32)pos.x, 360 - (i32)pos.y);
             rect.setScale(scale.x, scale.y);
