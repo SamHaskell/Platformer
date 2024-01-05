@@ -66,6 +66,19 @@ void SceneTest::OnAction(Action action)
     {
         m_ShowDebugOverlay = !m_ShowDebugOverlay;
     }
+    else if (action.Name == "LeftClick")
+    {
+        if (action.Type == ActionType::Begin)
+        {
+            Vec2 mousePos = ScreenToWorld({action.Position.x, action.Position.y});
+            NT_INFO("Left Click: (%.1f, %.1f)", mousePos.x, mousePos.y);
+        } else if (action.Type == ActionType::End)
+        {
+            Vec2 mousePos = ScreenToWorld({action.Position.x, action.Position.y});
+            NT_INFO("Left Release: (%.1f, %.1f)", mousePos.x, mousePos.y);
+        }
+    }
+
 }
 
 void SceneTest::Update(f64 dt)
@@ -101,9 +114,6 @@ void SceneTest::Update(f64 dt)
     {
         UpdateAnimations(dt);
     }
-
-    auto mousePos = ImGui::GetIO().MousePos;
-    NT_INFO("Mouse World Position: (%.1f, %.1f)", ScreenToWorld({mousePos.x, mousePos.y}).x, ScreenToWorld({mousePos.x, mousePos.y}).y);
 }
 
 void SceneTest::Render(sf::RenderWindow *window)
