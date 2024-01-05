@@ -18,6 +18,7 @@ class SceneTest : public Scene {
     private:
         void SpawnPlayer();
         Vec2 ScreenToWorld(Vec2 screenPos);
+        Vec2 WorldToScreen(Vec2 worldPos);
 
         void UpdateGravity(f64 dt);
         void UpdatePositions(f64 dt);
@@ -29,6 +30,7 @@ class SceneTest : public Scene {
 
         void RenderSprites(sf::RenderWindow* window);
 
+        void DebugRenderWorldGrid(sf::RenderWindow* window);
         void DebugRenderColliders(sf::RenderWindow *window);
 
         void LoadLevel(const std::string& path);
@@ -47,10 +49,11 @@ class SceneTest : public Scene {
 
             bool RenderSprites = true;
 
-            bool DebugRenderColliders = false;
+            bool DebugRenderWorldGrid = true;
+            bool DebugRenderColliders = true;
         } m_SystemToggles;
 
-        bool m_ShowDebugOverlay = false;
+        bool m_ShowDebugOverlay = true;
 
         std::shared_ptr<Entity> m_Player;
         sf::View m_Camera;

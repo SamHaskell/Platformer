@@ -70,15 +70,13 @@ void SceneTest::OnAction(Action action)
     {
         if (action.Type == ActionType::Begin)
         {
-            Vec2 mousePos = ScreenToWorld({action.Position.x, action.Position.y});
-            NT_INFO("Left Click: (%.1f, %.1f)", mousePos.x, mousePos.y);
-        } else if (action.Type == ActionType::End)
+
+        }
+        else if (action.Type == ActionType::End)
         {
-            Vec2 mousePos = ScreenToWorld({action.Position.x, action.Position.y});
-            NT_INFO("Left Release: (%.1f, %.1f)", mousePos.x, mousePos.y);
+
         }
     }
-
 }
 
 void SceneTest::Update(f64 dt)
@@ -133,7 +131,10 @@ void SceneTest::Render(sf::RenderWindow *window)
         DebugRenderColliders(window);
     }
 
-    window->setView(window->getDefaultView());
+    if (m_SystemToggles.DebugRenderWorldGrid)
+    {
+        DebugRenderWorldGrid(window);
+    }
 }
 
 void SceneTest::DrawGUI()
@@ -207,6 +208,7 @@ void SceneTest::DrawGUI()
 
             ImGui::SeparatorText("Debug");
 
+            ImGui::Checkbox("Debug Render World Grid", &m_SystemToggles.DebugRenderWorldGrid);
             ImGui::Checkbox("Debug Render Colliders", &m_SystemToggles.DebugRenderColliders);
 
             ImGui::EndTabItem();
@@ -231,7 +233,7 @@ void SceneTest::SpawnPlayer()
 
     m_Player = m_World.AddEntity("player");
 
-    m_Player->AddComponent<CTransform>(Vec2{16, 16}, Vec2{1, 1}, 0.0f);
+    m_Player->AddComponent<CTransform>(Vec2{8, 32}, Vec2{1, 1}, 0.0f);
 
     m_Player->AddComponent<CVelocity>(Vec2{0, 0}, 0.0f);
 
@@ -257,8 +259,20 @@ Vec2 SceneTest::ScreenToWorld(Vec2 screenPos)
     sf::Vector2f cameraSize = m_Camera.getSize();
 
     worldPos.x = ((screenPos.x / windowSize.x) - 0.5f) * cameraSize.x + cameraPos.x;
-    worldPos.y = (0.5f + 1.0f - (screenPos.y / windowSize.y)) * cameraSize.y - cameraPos.y;
+    worldPos.y = (1.5f - (screenPos.y / windowSize.y)) * cameraSize.y - cameraPos.y;
     return worldPos;
+}
+
+Vec2 SceneTest::WorldToScreen(Vec2 worldPos)
+{
+    Vec2 screenPos;
+    Vec2 windowSize = m_Game->GetWindowSize();
+    sf::Vector2f cameraPos = m_Camera.getCenter();
+    sf::Vector2f cameraSize = m_Camera.getSize();
+
+    screenPos.x = ((worldPos.x - cameraPos.x) / cameraSize.x + 0.5f) * windowSize.x;
+    screenPos.y = -((worldPos.y + cameraPos.y) / cameraSize.y - 1.5f) * windowSize.y;
+    return screenPos;
 }
 
 void SceneTest::UpdatePositions(f64 dt)
@@ -467,16 +481,25 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
                 playerTransform.Position = hit.Point + hit.Normal * 0.1f;
                 playerTransform.Position.y -= playerCollider.Size.y / 2.0f;
             }
+            else {
+                playerVelocity.Velocity += hit.Normal * Vec2::Dot(hit.Normal, playerVelocity.Velocity) * -1.0f * (1.0f - hit.Distance);
+            }
+            
+            if (hit.Distance < 0.0f)
+            {
+                NT_INFO("Hit: Position(%1.f. %1.f), Normal(%1.f, %1.f), Dist(%3.f)", hit.Point.x, hit.Point.y, hit.Normal.x, hit.Normal.y, hit.Distance);
 
-            playerVelocity.Velocity += hit.Normal * Vec2::Dot(hit.Normal, playerVelocity.Velocity) * -1.0f * (1.0f - hit.Distance);
+                NT_INFO("Player Position(%1.f, %1.f), Velocity(%1.f, %1.f)", playerTransform.Position.x, playerTransform.Position.y, playerVelocity.Velocity.x, playerVelocity.Velocity.y);
+            }
 
-            // NT_INFO("Hit: Position(%1.f. %1.f), Normal(%1.f, %1.f), Dist(%1.f)", hit.Point.x, hit.Point.y, hit.Normal.x, hit.Normal.y, hit.Distance);
         }
     }
 }
 
 void SceneTest::RenderSprites(sf::RenderWindow *window)
 {
+    window->setView(m_Camera);
+
     std::vector<CSprite *> sprites;
 
     for (auto e : m_World.GetEntities())
@@ -506,8 +529,71 @@ void SceneTest::RenderSprites(sf::RenderWindow *window)
     }
 }
 
+void SceneTest::DebugRenderWorldGrid(sf::RenderWindow *window)
+{
+    window->setView(window->getDefaultView());
+
+    sf::Vector2i cameraSize = (sf::Vector2i)m_Camera.getSize();
+    sf::Vector2i cameraPos = (sf::Vector2i)m_Camera.getCenter();
+
+    i32 gridLeft = ((cameraPos.x - cameraSize.x / 2) / 16) * 16 - 32;
+    i32 gridRight = ((cameraPos.x + cameraSize.x / 2) / 16) * 16 + 32;
+
+    i32 gridTop = ((cameraSize.y / 2 - cameraPos.y) / 16) * 16 - 32;
+    i32 gridBottom = ((cameraSize.y + cameraSize.y / 2 - cameraPos.y) / 16) * 16 + 32;
+
+    sf::Color col = sf::Color::Black;
+    col.a = 80;
+
+    for (i32 i = gridLeft; i <= gridRight; i += 16)
+    {
+        Vec2 screenTop = WorldToScreen({(f32)i, (f32)(gridTop)});
+        Vec2 screenBottom = WorldToScreen({(f32)i, (f32)(gridBottom)});
+
+        sf::Vertex line[] =
+            {
+                sf::Vertex(sf::Vector2f(screenTop.x, screenTop.y), col),
+                sf::Vertex(sf::Vector2f(screenBottom.x, screenBottom.y), col)};
+        window->draw(line, 2, sf::Lines);
+    }
+
+    for (i32 j = gridTop; j <= gridBottom; j += 16)
+    {
+        Vec2 screenLeft = WorldToScreen({(f32)gridLeft, (f32)j});
+        Vec2 screenRight = WorldToScreen({(f32)gridRight, (f32)j});
+
+        sf::Vertex line[] =
+            {
+                sf::Vertex(sf::Vector2f(screenLeft.x, screenLeft.y), col),
+                sf::Vertex(sf::Vector2f(screenRight.x, screenRight.y), col)};
+        window->draw(line, 2, sf::Lines);
+    }
+
+    // Draw coords in corners of grid cells
+
+    col.a = 255;
+
+    sf::Text text;
+    text.setFont(ResourceManager::GetInstance().GetFont("font_noto"));
+    text.setCharacterSize(8);
+    text.setFillColor(col);
+
+    for (i32 i = gridLeft; i <= gridRight; i += 16)
+    {
+        for (i32 j = gridTop; j <= gridBottom; j += 16)
+        {
+            Vec2 screenPos = WorldToScreen({(f32)i + 2, (f32)j + 14});
+            text.setString(std::to_string(i / 16) + ", " + std::to_string(j / 16));
+            text.setPosition(screenPos.x, screenPos.y);
+            window->draw(text);
+        }
+    }
+}
+
 void SceneTest::DebugRenderColliders(sf::RenderWindow *window)
 {
+    window->setView(m_Camera);
+
     for (auto e : m_World.GetEntities())
     {
         if (e->HasComponent<CBoxCollider>() && e->HasComponent<CTransform>())
@@ -519,14 +605,17 @@ void SceneTest::DebugRenderColliders(sf::RenderWindow *window)
             Vec2 scale = tf.Scale;
             Vec2 size = collider.Size;
 
+            sf::Color col = sf::Color::Red;
+            col.a = 255;
+
             sf::RectangleShape rect(sf::Vector2f(size.x, size.y));
             rect.setFillColor(sf::Color::Transparent);
-            rect.setOutlineColor(sf::Color::Red);
+            rect.setOutlineColor(col);
             rect.setOutlineThickness(0.2f);
             rect.setOrigin(size.x / 2.0f, size.y);
             rect.setPosition((i32)pos.x, 360 - (i32)pos.y);
             rect.setScale(scale.x, scale.y);
-            window->draw(rect);
+            window->draw(rect, sf::BlendAlpha);
         }
     }
 }
