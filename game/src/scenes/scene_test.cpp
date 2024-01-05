@@ -24,6 +24,8 @@ void SceneTest::OnSceneEnter()
 
     RegisterAction(sf::Keyboard::Space, "Jump");
 
+    RegisterAction(sf::Keyboard::F1, "ToggleDebugOverlay");
+
     NT_INFO("Entering test scene.");
 
     LoadLevel("assets/levels/level_1.json");
@@ -59,21 +61,45 @@ void SceneTest::OnAction(Action action)
     {
         playerActions.Jump = (action.Type == ActionType::Begin);
     }
+    else if (action.Name == "ToggleDebugOverlay" && action.Type == ActionType::Begin)
+    {
+        m_ShowDebugOverlay = !m_ShowDebugOverlay;
+    }
 }
 
 void SceneTest::Update(f64 dt)
 {
     m_World.Update();
 
-    UpdateGravity(dt);
-    UpdatePlayerMovement(dt);
+    if (m_SystemToggles.UpdateGravity)
+    {
+        UpdateGravity(dt);
+    }
 
-    PhysicsCheckCollisions(dt);
-    
-    UpdatePositions(dt);
-    
-    UpdatePlayerAnimationState(dt);
-    UpdateAnimations(dt);
+    if (m_SystemToggles.UpdatePlayerMovement)
+    {
+        UpdatePlayerMovement(dt);
+    }
+
+    if (m_SystemToggles.PhysicsCheckCollisions)
+    {
+        PhysicsCheckCollisions(dt);
+    }
+
+    if (m_SystemToggles.UpdatePositions)
+    {
+        UpdatePositions(dt);
+    }
+
+    if (m_SystemToggles.UpdatePlayerAnimationState)
+    {
+        UpdatePlayerAnimationState(dt);
+    }
+
+    if (m_SystemToggles.UpdateAnimations)
+    {
+        UpdateAnimations(dt);
+    }
 }
 
 void SceneTest::Render(sf::RenderWindow *window)
@@ -81,12 +107,24 @@ void SceneTest::Render(sf::RenderWindow *window)
     sf::View view(sf::FloatRect(0, 0, 320, 180));
     window->setView(view);
 
-    RenderSprites(window);
-    // RenderDebugColliders(window);
+    if (m_SystemToggles.RenderSprites)
+    {
+        RenderSprites(window);
+    }
+
+    if (m_SystemToggles.DebugRenderColliders)
+    {
+        DebugRenderColliders(window);
+    }
 }
 
 void SceneTest::DrawGUI()
 {
+    if (!m_ShowDebugOverlay)
+    {
+        return;
+    }
+
     ImGuiIO &io = ImGui::GetIO();
     ImVec2 mousePos = io.MousePos;
     f32 deltaTime = io.DeltaTime;
@@ -116,15 +154,43 @@ void SceneTest::DrawGUI()
     {
         if (ImGui::BeginTabItem("Entities"))
         {
+            ImGui::Separator();
+
             ImGui::Text("Entity Count: %u", m_World.GetEntityCount());
+
+            ImGui::Separator();
+
             for (auto e : m_World.GetEntities())
             {
                 ImGui::Text("Entity: %s", e->GetTag().c_str());
             }
+
+            ImGui::Separator();
+
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Systems"))
         {
+            ImGui::SeparatorText("OnUpdate");
+
+            ImGui::Checkbox("Update Gravity", &m_SystemToggles.UpdateGravity);
+            ImGui::Checkbox("Update Positions", &m_SystemToggles.UpdatePositions);
+            ImGui::Checkbox("Update Player Movement", &m_SystemToggles.UpdatePlayerMovement);
+            ImGui::Checkbox("Update Player Animation State", &m_SystemToggles.UpdatePlayerAnimationState);
+            ImGui::Checkbox("Update Animations", &m_SystemToggles.UpdateAnimations);
+
+            ImGui::SeparatorText("OnPhysicsUpdate");
+
+            ImGui::Checkbox("Physics Check Collisions", &m_SystemToggles.PhysicsCheckCollisions);
+
+            ImGui::SeparatorText("OnRender");
+
+            ImGui::Checkbox("Render Sprites", &m_SystemToggles.RenderSprites);
+
+            ImGui::SeparatorText("Debug");
+
+            ImGui::Checkbox("Debug Render Colliders", &m_SystemToggles.DebugRenderColliders);
+
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Settings"))
@@ -193,11 +259,17 @@ void SceneTest::UpdateGravity(f64 dt)
 
 void SceneTest::UpdatePlayerMovement(f64 dt)
 {
-    if (!m_Player->HasComponent<CPlayerActions>()) { return; }
-    if (!m_Player->HasComponent<CVelocity>()) { return; }
+    if (!m_Player->HasComponent<CPlayerActions>())
+    {
+        return;
+    }
+    if (!m_Player->HasComponent<CVelocity>())
+    {
+        return;
+    }
 
     auto &actions = m_Player->GetComponent<CPlayerActions>();
-    auto& vel = m_Player->GetComponent<CVelocity>();
+    auto &vel = m_Player->GetComponent<CVelocity>();
 
     vel.Velocity.x = 0.0f;
 
@@ -227,12 +299,12 @@ void SceneTest::UpdatePlayerAnimationState(f64 dt)
 
     if (m_Player->HasComponent<CTransform>() && m_Player->HasComponent<CSpriteAnimator>())
     {
-        auto& anim = m_Player->GetComponent<CSpriteAnimator>();
-        auto& tf = m_Player->GetComponent<CTransform>();
+        auto &anim = m_Player->GetComponent<CSpriteAnimator>();
+        auto &tf = m_Player->GetComponent<CTransform>();
 
         if (m_Player->HasComponent<CVelocity>() && fabsf(m_Player->GetComponent<CVelocity>().Velocity.y) > 10.0f)
         {
-            auto& vel = m_Player->GetComponent<CVelocity>();
+            auto &vel = m_Player->GetComponent<CVelocity>();
             if (vel.Velocity.y > 1.0f)
             {
                 anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_rise"));
@@ -251,16 +323,15 @@ void SceneTest::UpdatePlayerAnimationState(f64 dt)
             anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
         }
 
-        if (actions.Left) 
+        if (actions.Left)
         {
             tf.Scale.x = -1.0f;
         }
-        else if (actions.Right) 
+        else if (actions.Right)
         {
             tf.Scale.x = 1.0f;
         }
     }
-
 }
 
 void SceneTest::UpdateAnimations(f64 dt)
@@ -275,7 +346,7 @@ void SceneTest::UpdateAnimations(f64 dt)
             while (anim.TimeAccumulator > anim.AnimationSource.FrameTime)
             {
                 anim.TimeAccumulator -= anim.AnimationSource.FrameTime;
-                anim.CurrentFrame ++;
+                anim.CurrentFrame++;
             }
 
             if (anim.CurrentFrame == anim.AnimationSource.FrameCount)
@@ -297,8 +368,8 @@ void SceneTest::UpdateAnimations(f64 dt)
 
             if (e->HasComponent<CSprite>())
             {
-                auto& sprite = e->GetComponent<CSprite>();
-                
+                auto &sprite = e->GetComponent<CSprite>();
+
                 sprite.Sprite.setTexture(
                     ResourceManager::GetInstance().GetTexture(anim.AnimationSource.TextureSourceName));
 
@@ -318,16 +389,15 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
 
     if (m_Player->HasComponent<CBoxCollider>() && m_Player->HasComponent<CTransform>() && m_Player->HasComponent<CVelocity>())
     {
-        auto& playerCollider = m_Player->GetComponent<CBoxCollider>();
-        auto& playerTransform = m_Player->GetComponent<CTransform>();
-        auto& playerVelocity = m_Player->GetComponent<CVelocity>();
+        auto &playerCollider = m_Player->GetComponent<CBoxCollider>();
+        auto &playerTransform = m_Player->GetComponent<CTransform>();
+        auto &playerVelocity = m_Player->GetComponent<CVelocity>();
 
         AABB playerBox = {
             playerTransform.Position.x - playerCollider.Size.x / 2.0f,
             playerTransform.Position.y,
             playerCollider.Size.x,
-            playerCollider.Size.y
-        };
+            playerCollider.Size.y};
 
         std::vector<RaycastHit> hits;
 
@@ -335,37 +405,33 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
         {
             if (e->HasComponent<CBoxCollider>() && e->HasComponent<CTransform>())
             {
-                auto& collider = e->GetComponent<CBoxCollider>();
-                auto& tf = e->GetComponent<CTransform>();
+                auto &collider = e->GetComponent<CBoxCollider>();
+                auto &tf = e->GetComponent<CTransform>();
 
                 AABB tileBox = {
                     tf.Position.x - collider.Size.x / 2.0f,
                     tf.Position.y,
                     collider.Size.x,
-                    collider.Size.y
-                };
+                    collider.Size.y};
 
-                RaycastHit hit {};
+                RaycastHit hit{};
                 if (Physics2D::AABBcast(
-                        playerBox, 
-                        tileBox, 
-                        Vec2::Normalised(playerVelocity.Velocity), 
-                        hit, 
-                        Vec2::Magnitude(playerVelocity.Velocity) * dt
-                    )
-                )
+                        playerBox,
+                        tileBox,
+                        Vec2::Normalised(playerVelocity.Velocity),
+                        hit,
+                        Vec2::Magnitude(playerVelocity.Velocity) * dt))
                 {
                     hits.push_back(hit);
                 }
             }
         }
 
-        std::sort(hits.begin(), hits.end(), [](RaycastHit a, RaycastHit b) {
-            return a.Distance < b.Distance;
-        });
+        std::sort(hits.begin(), hits.end(), [](RaycastHit a, RaycastHit b)
+                  { return a.Distance < b.Distance; });
 
         for (auto hit : hits)
-        {   
+        {
             if (hit.Distance <= 0.0f)
             {
                 playerTransform.Position = hit.Point + hit.Normal * 0.1f;
@@ -381,14 +447,14 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
 
 void SceneTest::RenderSprites(sf::RenderWindow *window)
 {
-    std::vector<CSprite*> sprites;
-    
+    std::vector<CSprite *> sprites;
+
     for (auto e : m_World.GetEntities())
     {
         if (e->HasComponent<CSprite>() && e->HasComponent<CTransform>())
         {
-            auto& sprite = e->GetComponent<CSprite>();
-            auto& tf = e->GetComponent<CTransform>();
+            auto &sprite = e->GetComponent<CSprite>();
+            auto &tf = e->GetComponent<CTransform>();
             Vec2 pos = tf.Position;
             f32 rot = tf.Rotation;
             Vec2 scale = tf.Scale;
@@ -401,23 +467,23 @@ void SceneTest::RenderSprites(sf::RenderWindow *window)
         }
     }
 
-    std::sort(sprites.begin(), sprites.end(), [](CSprite* a, CSprite* b) {
-        return a->Depth < b->Depth;
-    });
+    std::sort(sprites.begin(), sprites.end(), [](CSprite *a, CSprite *b)
+              { return a->Depth < b->Depth; });
 
-    for (auto sprite : sprites) {
+    for (auto sprite : sprites)
+    {
         window->draw(sprite->Sprite);
     }
 }
 
-void SceneTest::RenderDebugColliders(sf::RenderWindow *window)
+void SceneTest::DebugRenderColliders(sf::RenderWindow *window)
 {
     for (auto e : m_World.GetEntities())
     {
         if (e->HasComponent<CBoxCollider>() && e->HasComponent<CTransform>())
         {
-            auto& tf = e->GetComponent<CTransform>();
-            auto& collider = e->GetComponent<CBoxCollider>();
+            auto &tf = e->GetComponent<CTransform>();
+            auto &collider = e->GetComponent<CBoxCollider>();
 
             Vec2 pos = tf.Position;
             Vec2 scale = tf.Scale;
@@ -449,7 +515,8 @@ void SceneTest::LoadLevel(const std::string &path)
 
     json data = json::parse(file);
 
-    struct TileData {
+    struct TileData
+    {
         std::string TextureSource;
         u32 Width;
         u32 Height;
@@ -464,7 +531,7 @@ void SceneTest::LoadLevel(const std::string &path)
         // Process the tile types
 
         json tileset = data["tileset"];
-        for (auto& [key, value] : tileset.items())
+        for (auto &[key, value] : tileset.items())
         {
             std::string name = value["name"];
             std::string textureSource = value["texture-source"];
@@ -478,8 +545,7 @@ void SceneTest::LoadLevel(const std::string &path)
                 width,
                 height,
                 offsetX,
-                offsetY
-            };
+                offsetY};
         }
     }
 
@@ -488,7 +554,7 @@ void SceneTest::LoadLevel(const std::string &path)
         // Instantiate tile entities
 
         json tiles = data["tiles"];
-        for (auto& [key, value] : tiles.items())
+        for (auto &[key, value] : tiles.items())
         {
             std::string type = value["type"];
             TileData tile = tileData[type];
@@ -505,8 +571,7 @@ void SceneTest::LoadLevel(const std::string &path)
                 tile.OffsetY,
                 tile.Width,
                 tile.Height,
-                1.0f
-            );
+                1.0f);
             e->AddComponent<CBoxCollider>(Vec2{(f32)tile.Width, (f32)tile.Height});
         }
     }
@@ -516,7 +581,7 @@ void SceneTest::LoadLevel(const std::string &path)
         // Instantiate decoration entities
 
         json decs = data["decorations"];
-        for (auto& [key, value] : decs.items())
+        for (auto &[key, value] : decs.items())
         {
             std::string type = value["type"];
             TileData tile = tileData[type];
@@ -533,9 +598,7 @@ void SceneTest::LoadLevel(const std::string &path)
                 tile.OffsetY,
                 tile.Width,
                 tile.Height,
-                0.0f
-            );
+                0.0f);
         }
     }
-
 }

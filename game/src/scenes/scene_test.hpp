@@ -27,10 +27,30 @@ class SceneTest : public Scene {
         void PhysicsCheckCollisions(f64 dt);
 
         void RenderSprites(sf::RenderWindow* window);
-        void RenderDebugColliders(sf::RenderWindow *window);
+
+        void DebugRenderColliders(sf::RenderWindow *window);
 
         void LoadLevel(const std::string& path);
 
     private:
+
+        struct SystemToggles
+        {
+            bool UpdateGravity = true;
+            bool UpdatePositions = true;
+            bool UpdatePlayerMovement = true;
+            bool UpdatePlayerAnimationState = true;
+            bool UpdateAnimations = true;
+
+            bool PhysicsCheckCollisions = true;
+
+            bool RenderSprites = true;
+
+            bool DebugRenderColliders = false;
+        } m_SystemToggles;
+
+        bool m_ShowDebugOverlay = false;
+
         std::shared_ptr<Entity> m_Player;
+        sf::View m_Camera;
 };
