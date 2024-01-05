@@ -37,66 +37,7 @@ void Game::Tick()
     
         ImGui::SFML::ProcessEvent(*m_Window, event);
 
-        if (event.type == sf::Event::Closed) {
-            m_Running = false;
-        }
-
-        if (event.type == sf::Event::Resized) {
-            m_Window->setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
-        }
-
-        if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
-            std::string actionName;
-            if (scene->GetAction(event.key.code, actionName)) {
-                if (!m_CachedKeyState[event.key.code] && (event.type == sf::Event::KeyPressed)) {
-                    Action action = {
-                        .Name = actionName,
-                        .Type = ActionType::Begin
-                    };
-                    scene->OnAction(action);
-                } else if (m_CachedKeyState[event.key.code] && (event.type == sf::Event::KeyReleased)){
-                    Action action = {
-                        .Name = actionName,
-                        .Type = ActionType::End
-                    };
-                    scene->OnAction(action);
-                }
-            }
-            m_CachedKeyState[event.key.code] = (event.type == sf::Event::KeyPressed);
-        }
-
-        if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) {
-            switch (event.mouseButton.button)
-            {
-                case sf::Mouse::Left:
-                {
-                    Action action = {
-                        .Name = "LeftClick",
-                        .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
-                        .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
-                    };
-                    scene->OnAction(action);
-                } break;
-                case sf::Mouse::Right:
-                {
-                    Action action = {
-                        .Name = "RightClick",
-                        .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
-                        .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
-                    };
-                    scene->OnAction(action);
-                } break;
-                case sf::Mouse::Middle:
-                {
-                    Action action = {
-                        .Name = "MiddleClick",
-                        .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
-                        .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
-                    };
-                    scene->OnAction(action);
-                } break;
-            }
-        }
+        HandleEvent(event);
     }
 
     ImGui::SFML::Update(*m_Window, m_SFMLClock.restart());
@@ -108,6 +49,72 @@ void Game::Tick()
     ImGui::SFML::Render(*m_Window);
     
     m_Window->display();
+}
+
+void Game::HandleEvent(sf::Event& event)
+{
+    auto scene = m_Scenes[m_CurrentScene];
+
+    if (event.type == sf::Event::Closed) {
+        m_Running = false;
+    }
+
+    if (event.type == sf::Event::Resized) {
+        m_Window->setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+    }
+
+    if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
+        std::string actionName;
+        if (scene->GetAction(event.key.code, actionName)) {
+            if (!m_CachedKeyState[event.key.code] && (event.type == sf::Event::KeyPressed)) {
+                Action action = {
+                    .Name = actionName,
+                    .Type = ActionType::Begin
+                };
+                scene->OnAction(action);
+            } else if (m_CachedKeyState[event.key.code] && (event.type == sf::Event::KeyReleased)){
+                Action action = {
+                    .Name = actionName,
+                    .Type = ActionType::End
+                };
+                scene->OnAction(action);
+            }
+        }
+        m_CachedKeyState[event.key.code] = (event.type == sf::Event::KeyPressed);
+    }
+
+    if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) {
+        switch (event.mouseButton.button)
+        {
+            case sf::Mouse::Left:
+            {
+                Action action = {
+                    .Name = "LeftClick",
+                    .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
+                    .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
+                };
+                scene->OnAction(action);
+            } break;
+            case sf::Mouse::Right:
+            {
+                Action action = {
+                    .Name = "RightClick",
+                    .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
+                    .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
+                };
+                scene->OnAction(action);
+            } break;
+            case sf::Mouse::Middle:
+            {
+                Action action = {
+                    .Name = "MiddleClick",
+                    .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
+                    .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
+                };
+                scene->OnAction(action);
+            } break;
+        }
+    }
 }
 
 void Game::Update(f64 dt) {

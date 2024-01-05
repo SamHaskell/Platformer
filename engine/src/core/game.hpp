@@ -17,6 +17,7 @@ class Game {
         ~Game() = default;
         
         void Tick();
+        void HandleEvent(sf::Event& event);
         bool ShouldClose() { return !m_Running; }
         void Update(f64 dt);
 
