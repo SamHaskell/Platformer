@@ -22,9 +22,7 @@ class Game {
         void Update(f64 dt);
 
         void ChangeScene(const std::string& name, std::shared_ptr<Scene> scene);
-
         void CaptureScreen(const std::string& path);
-
         Vec2 GetWindowSize() const;
 
     private:
