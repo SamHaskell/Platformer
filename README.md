@@ -11,7 +11,7 @@ I've had a great time putting this together over the past couple of weeks, and I
 
 I plan to write a few things about the development of this project and my design choices [here](https://samhaskell.dev/) if you're interested.
 
-![A screenshot of the game, with debug overlay shown](./res/game-view.png)
+![A screenshot of the game, with debug overlay shown](./res/game.png)
 
 ## Features
 

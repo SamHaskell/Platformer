@@ -11,6 +11,11 @@
             "path" : "assets/textures/environment/tileset.png"
         },
         {
+            "type" : "texture",
+            "name" : "tex_background",
+            "path" : "assets/textures/environment/Background/back.png"
+        },
+        {
             "type" : "animation",
             "name" : "anim_player_idle",
             "animation" : {

@@ -120,6 +120,11 @@ void SceneTest::Update(f64 dt)
 
 void SceneTest::Render(sf::RenderWindow *window)
 {
+    if (m_SystemToggles.RenderBackground)
+    {
+        RenderBackground(window);
+    }
+
     if (m_SystemToggles.RenderSprites)
     {
         RenderSprites(window);
@@ -208,6 +213,7 @@ void SceneTest::DrawGUI()
 
             ImGui::SeparatorText("OnRender");
 
+            ImGui::Checkbox("Render Background", &m_SystemToggles.RenderBackground);
             ImGui::Checkbox("Render Sprites", &m_SystemToggles.RenderSprites);
 
             ImGui::SeparatorText("Debug");
@@ -595,6 +601,26 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
             }
         }
     }
+}
+
+void SceneTest::RenderBackground(sf::RenderWindow* window)
+{
+    window->setView(window->getDefaultView());
+
+    // Draw background texture to whole screen
+
+    sf::Texture& tex = ResourceManager::GetInstance().GetTexture("tex_background");
+
+    auto texSize = tex.getSize();
+    auto windowSize = window->getSize();
+
+    sf::Sprite sprite(tex);
+    sprite.setScale(
+        (f32)windowSize.x / (f32)texSize.x,
+        (f32)windowSize.y / (f32)texSize.y
+    );
+
+    window->draw(sprite);
 }
 
 void SceneTest::RenderSprites(sf::RenderWindow *window)

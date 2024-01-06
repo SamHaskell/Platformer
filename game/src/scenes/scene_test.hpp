@@ -50,6 +50,7 @@ class SceneTest : public Scene {
 
         void PhysicsCheckCollisions(f64 dt);
 
+        void RenderBackground(sf::RenderWindow* window);
         void RenderSprites(sf::RenderWindow* window);
 
         void DebugRenderWorldGrid(sf::RenderWindow* window);
@@ -69,6 +70,7 @@ class SceneTest : public Scene {
             bool UpdateAnimations = true;
             bool UpdateCamera = true;
             bool PhysicsCheckCollisions = true;
+            bool RenderBackground = true;
             bool RenderSprites = true;
             bool DebugRenderWorldGrid = false;
             bool DebugRenderColliders = false;
