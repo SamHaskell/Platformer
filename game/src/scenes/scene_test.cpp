@@ -637,16 +637,16 @@ void SceneTest::DebugRenderWorldGrid(sf::RenderWindow *window)
     sf::Vector2i cameraSize = (sf::Vector2i)m_Camera.getSize();
     sf::Vector2i cameraPos = (sf::Vector2i)m_Camera.getCenter();
 
-    i32 gridLeft = ((cameraPos.x - cameraSize.x / 2) / 16) * 16 - 32;
-    i32 gridRight = ((cameraPos.x + cameraSize.x / 2) / 16) * 16 + 32;
+    i32 gridLeft = ((cameraPos.x - cameraSize.x / 2) / 32) * 32 - 32;
+    i32 gridRight = ((cameraPos.x + cameraSize.x / 2) / 32) * 32 + 32;
 
-    i32 gridTop = ((cameraSize.y / 2 - cameraPos.y) / 16) * 16 - 32;
-    i32 gridBottom = ((cameraSize.y + cameraSize.y / 2 - cameraPos.y) / 16) * 16 + 32;
+    i32 gridTop = ((cameraSize.y / 2 - cameraPos.y) / 32) * 32 - 32;
+    i32 gridBottom = ((cameraSize.y + cameraSize.y / 2 - cameraPos.y) / 32) * 32 + 32;
 
     sf::Color col = sf::Color::Black;
     col.a = 80;
 
-    for (i32 i = gridLeft; i <= gridRight; i += 16)
+    for (i32 i = gridLeft; i <= gridRight; i += 32)
     {
         Vec2 screenTop = WorldToScreen({(f32)i, (f32)(gridTop)});
         Vec2 screenBottom = WorldToScreen({(f32)i, (f32)(gridBottom)});
@@ -658,7 +658,7 @@ void SceneTest::DebugRenderWorldGrid(sf::RenderWindow *window)
         window->draw(line, 2, sf::Lines);
     }
 
-    for (i32 j = gridTop; j <= gridBottom; j += 16)
+    for (i32 j = gridTop; j <= gridBottom; j += 32)
     {
         Vec2 screenLeft = WorldToScreen({(f32)gridLeft, (f32)j});
         Vec2 screenRight = WorldToScreen({(f32)gridRight, (f32)j});
@@ -679,12 +679,12 @@ void SceneTest::DebugRenderWorldGrid(sf::RenderWindow *window)
     text.setCharacterSize(8);
     text.setFillColor(col);
 
-    for (i32 i = gridLeft; i <= gridRight; i += 16)
+    for (i32 i = gridLeft; i <= gridRight; i += 32)
     {
-        for (i32 j = gridTop; j <= gridBottom; j += 16)
+        for (i32 j = gridTop; j <= gridBottom; j += 32)
         {
-            Vec2 screenPos = WorldToScreen({(f32)i + 2, (f32)j + 14});
-            text.setString(std::to_string(i / 16) + ", " + std::to_string(j / 16));
+            Vec2 screenPos = WorldToScreen({(f32)i + 2, (f32)j + 62});
+            text.setString(std::to_string(i / 32) + ", " + std::to_string(j / 32));
             text.setPosition(screenPos.x, screenPos.y);
             window->draw(text);
         }
