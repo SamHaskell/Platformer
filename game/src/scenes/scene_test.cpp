@@ -6,6 +6,7 @@
 #include "physics/collisions.hpp"
 
 #include "imgui.h"
+#include "imgui-SFML.h"
 
 #include <map>
 #include <fstream>
@@ -70,11 +71,9 @@ void SceneTest::OnAction(Action action)
     {
         if (action.Type == ActionType::Begin)
         {
-
         }
         else if (action.Type == ActionType::End)
         {
-
         }
     }
 }
@@ -112,15 +111,15 @@ void SceneTest::Update(f64 dt)
     {
         UpdateAnimations(dt);
     }
+
+    if (m_SystemToggles.UpdateCamera)
+    {
+        UpdateCamera(dt);
+    }
 }
 
 void SceneTest::Render(sf::RenderWindow *window)
 {
-    Vec2 playerPos = m_Player->GetComponent<CTransform>().Position;
-    m_Camera.setSize(640, 360);
-    m_Camera.setCenter((i32)playerPos.x, 360 - (i32)playerPos.y);
-    window->setView(m_Camera);
-
     if (m_SystemToggles.RenderSprites)
     {
         RenderSprites(window);
@@ -134,6 +133,11 @@ void SceneTest::Render(sf::RenderWindow *window)
     if (m_SystemToggles.DebugRenderWorldGrid)
     {
         DebugRenderWorldGrid(window);
+    }
+
+    if (m_SystemToggles.DebugRenderCamera)
+    {
+        DebugRenderCamera(window);
     }
 }
 
@@ -210,6 +214,33 @@ void SceneTest::DrawGUI()
 
             ImGui::Checkbox("Debug Render World Grid", &m_SystemToggles.DebugRenderWorldGrid);
             ImGui::Checkbox("Debug Render Colliders", &m_SystemToggles.DebugRenderColliders);
+            ImGui::Checkbox("Debug Render Camera", &m_SystemToggles.DebugRenderCamera);
+
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Tiles"))
+        {
+            ImGui::Separator();
+
+            for (auto &[key, value] : m_TileData)
+            {
+                // Render a selectable image button of the tile
+
+                ImGui::Text("%s", key.c_str());
+                ImGui::Text("Texture: %s", value.TextureSource.c_str());
+
+                sf::Sprite sprite(ResourceManager::GetInstance().GetTexture(value.TextureSource), sf::IntRect(value.OffsetX, value.OffsetY, value.Width, value.Height));
+
+                if (ImGui::ImageButton(
+                    key.c_str(),
+                    sprite,
+                    sf::Vector2f(64, 64)))
+                {
+                    // TODO: Select tile
+                }
+
+                ImGui::Separator();
+            }
 
             ImGui::EndTabItem();
         }
@@ -233,13 +264,20 @@ void SceneTest::SpawnPlayer()
 
     m_Player = m_World.AddEntity("player");
 
-    m_Player->AddComponent<CTransform>(Vec2{8, 32}, Vec2{1, 1}, 0.0f);
+    m_Player->AddComponent<CTransform>(
+        Vec2{8, 32},
+        Vec2{1, 1},
+        0.0f);
 
-    m_Player->AddComponent<CVelocity>(Vec2{0, 0}, 0.0f);
+    m_Player->AddComponent<CVelocity>(
+        Vec2{0, 0},
+        0.0f);
 
     m_Player->AddComponent<CSprite>(
         ResourceManager::GetInstance().GetTexture("tex_player"),
-        0, 0, 32, 32, 2.0f);
+        0, 0,
+        32, 32,
+        2.0f);
 
     m_Player->AddComponent<CPlayerActions>();
 
@@ -309,7 +347,7 @@ void SceneTest::UpdatePlayerMovement(f64 dt)
     {
         return;
     }
-    
+
     if (!m_Player->HasComponent<CVelocity>())
     {
         return;
@@ -437,6 +475,27 @@ void SceneTest::UpdateAnimations(f64 dt)
     }
 }
 
+void SceneTest::UpdateCamera(f64 dt)
+{
+    if (m_Player->HasComponent<CTransform>())
+    {
+        Vec2 playerPos = m_Player->GetComponent<CTransform>().Position;
+        m_CameraParams.CurrentTarget = playerPos;
+
+        m_CameraParams.CurrentPosition = Vec2{
+            Maths::Lerp(m_CameraParams.CurrentPosition.x, m_CameraParams.CurrentTarget.x, (1.0f / m_CameraParams.DampTimeX) * dt),
+            Maths::Lerp(m_CameraParams.CurrentPosition.y, m_CameraParams.CurrentTarget.y, (1.0f / m_CameraParams.DampTimeY) * dt)
+        };
+
+        m_Camera.setSize(m_CameraParams.FrameWidth, m_CameraParams.FrameHeight);
+
+        m_Camera.setCenter(
+            (i32)m_CameraParams.CurrentPosition.x, 
+            (i32)(m_CameraParams.FrameHeight - m_CameraParams.CurrentPosition.y)
+        );
+    }
+}
+
 void SceneTest::PhysicsCheckCollisions(f64 dt)
 {
     /*
@@ -444,7 +503,7 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
         Intensive, but only performed for the player so probably fine.
         If wanted to extend to some generic rigidbody then would certainly need to optimise, e.g. broadphase checks first.
 
-        Currently we check for collisions with all tiles, order hits based on distance and then 
+        Currently we check for collisions with all tiles, order hits based on distance and then
         iterate through a second time, running another collision check. This is to ensure
         the player does not get stuck at boundaries between tiles.
     */
@@ -465,7 +524,8 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
             playerCollider.Size.x,
             playerCollider.Size.y};
 
-        struct BoxHit {
+        struct BoxHit
+        {
             AABB box;
             RaycastHit hit;
         };
@@ -547,7 +607,7 @@ void SceneTest::RenderSprites(sf::RenderWindow *window)
             f32 rot = tf.Rotation;
             Vec2 scale = tf.Scale;
 
-            sprite.Sprite.setPosition((i32)pos.x, 360 - (i32)pos.y);
+            sprite.Sprite.setPosition((i32)pos.x, m_CameraParams.FrameHeight - (i32)pos.y);
             sprite.Sprite.setRotation(rot);
             sprite.Sprite.setScale(scale.x, scale.y);
 
@@ -648,11 +708,33 @@ void SceneTest::DebugRenderColliders(sf::RenderWindow *window)
             rect.setOutlineColor(col);
             rect.setOutlineThickness(0.2f);
             rect.setOrigin(size.x / 2.0f, size.y);
-            rect.setPosition((i32)pos.x, 360 - (i32)pos.y);
+            rect.setPosition((i32)pos.x, m_CameraParams.FrameHeight - (i32)pos.y);
             rect.setScale(scale.x, scale.y);
             window->draw(rect, sf::BlendAlpha);
         }
     }
+}
+
+void SceneTest::DebugRenderCamera(sf::RenderWindow *window)
+{
+    window->setView(m_Camera);
+
+    sf::Color col = sf::Color::Green;
+    col.a = 255;
+
+    sf::RectangleShape rect(sf::Vector2f(m_CameraParams.BoxWidth, m_CameraParams.BoxHeight));
+    
+    rect.setFillColor(sf::Color::Transparent);
+    rect.setOutlineColor(col);
+    rect.setOutlineThickness(0.2f);
+    rect.setOrigin(m_CameraParams.BoxWidth / 2.0f, m_CameraParams.BoxHeight / 2.0f);
+
+    rect.setPosition(
+        (i32)m_CameraParams.CurrentPosition.x, 
+        m_CameraParams.FrameHeight - (i32)m_CameraParams.CurrentPosition.y
+    );
+    
+    window->draw(rect, sf::BlendAlpha);
 }
 
 void SceneTest::LoadLevel(const std::string &path)
@@ -669,17 +751,6 @@ void SceneTest::LoadLevel(const std::string &path)
 
     json data = json::parse(file);
 
-    struct TileData
-    {
-        std::string TextureSource;
-        u32 Width;
-        u32 Height;
-        i32 OffsetX;
-        i32 OffsetY;
-    };
-
-    std::map<std::string, TileData> tileData;
-
     if (data.contains("tileset"))
     {
         // Process the tile types
@@ -694,7 +765,7 @@ void SceneTest::LoadLevel(const std::string &path)
             i32 offsetX = value["offset-x"];
             i32 offsetY = value["offset-y"];
 
-            tileData[name] = {
+            m_TileData[name] = {
                 textureSource,
                 width,
                 height,
@@ -711,7 +782,7 @@ void SceneTest::LoadLevel(const std::string &path)
         for (auto &[key, value] : tiles.items())
         {
             std::string type = value["type"];
-            TileData tile = tileData[type];
+            TileData tile = m_TileData[type];
 
             Vec2 position;
             position.x = 8.0f + (f32)value["x"] * tile.Width;
@@ -738,7 +809,7 @@ void SceneTest::LoadLevel(const std::string &path)
         for (auto &[key, value] : decs.items())
         {
             std::string type = value["type"];
-            TileData tile = tileData[type];
+            TileData tile = m_TileData[type];
 
             Vec2 position;
             position.x = 8.0f + (f32)value["x"] * tile.Width;
