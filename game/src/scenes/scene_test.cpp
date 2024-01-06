@@ -249,6 +249,8 @@ void SceneTest::SpawnPlayer()
     m_Player->AddComponent<CGravity>(500.0f);
 
     m_Player->AddComponent<CBoxCollider>(Vec2{24, 22});
+
+    m_Player->AddComponent<CPlayerController>(200.0f, 250.0f);
 }
 
 Vec2 SceneTest::ScreenToWorld(Vec2 screenPos)
@@ -307,28 +309,36 @@ void SceneTest::UpdatePlayerMovement(f64 dt)
     {
         return;
     }
+    
     if (!m_Player->HasComponent<CVelocity>())
+    {
+        return;
+    }
+
+    if (!m_Player->HasComponent<CPlayerController>())
     {
         return;
     }
 
     auto &actions = m_Player->GetComponent<CPlayerActions>();
     auto &vel = m_Player->GetComponent<CVelocity>();
+    auto &controller = m_Player->GetComponent<CPlayerController>();
 
     vel.Velocity.x = 0.0f;
 
-    if (actions.Jump)
+    if (actions.Jump && controller.IsGrounded)
     {
-        vel.Velocity.y = 400.0f;
+        vel.Velocity.y = controller.JumpSpeed;
     }
 
     if (actions.Left)
     {
-        vel.Velocity.x -= 200.0f;
+        vel.Velocity.x -= controller.MoveSpeed;
     }
+
     if (actions.Right)
     {
-        vel.Velocity.x += 200.0f;
+        vel.Velocity.x += controller.MoveSpeed;
     }
 }
 
@@ -447,6 +457,8 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
         auto &playerTransform = m_Player->GetComponent<CTransform>();
         auto &playerVelocity = m_Player->GetComponent<CVelocity>();
 
+        m_Player->GetComponent<CPlayerController>().IsGrounded = false;
+
         AABB playerBox = {
             playerTransform.Position.x - playerCollider.Size.x / 2.0f,
             playerTransform.Position.y,
@@ -509,6 +521,11 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
 
                 Vec2 flippedNormal = Vec2{second_hit.Normal.y, second_hit.Normal.x};
                 playerVelocity.Velocity = flippedNormal * Vec2::Dot(flippedNormal, playerVelocity.Velocity);
+
+                if (second_hit.Normal.y > 0.0f)
+                {
+                    m_Player->GetComponent<CPlayerController>().IsGrounded = true;
+                }
             }
         }
     }

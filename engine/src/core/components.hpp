@@ -123,6 +123,16 @@ struct CGravity : Component
     CGravity(f32 gravity) : Gravity(gravity) {}
 };
 
+struct CPlayerController : Component
+{
+    f32 MoveSpeed = 200.0f;
+    f32 JumpSpeed = 250.0f;
+    bool IsGrounded = false;
+
+    CPlayerController() = default;
+    CPlayerController(f32 moveSpeed, f32 jumpSpeed) : MoveSpeed(moveSpeed), JumpSpeed(jumpSpeed) {}
+};
+
 struct CBoxCollider : Component
 {
     Vec2 Size = {1.0, 1.0};

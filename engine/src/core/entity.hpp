@@ -21,7 +21,8 @@ class Entity {
         CSprite,
         CPlayerActions,
         CGravity,
-        CBoxCollider
+        CBoxCollider,
+        CPlayerController
     >;
 
     public:
