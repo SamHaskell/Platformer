@@ -4,6 +4,10 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
+#include <iomanip>
+#include <ctime>
+#include <sstream>
+
 ResourceManager g_ResourceManager;
 
 Game::Game() {
@@ -80,6 +84,16 @@ void Game::HandleEvent(sf::Event& event)
                 scene->OnAction(action);
             }
         }
+
+        if (event.key.code == sf::Keyboard::F5 && event.type == sf::Event::KeyPressed) {
+            std::time_t t = std::time(nullptr);
+            std::tm tm = *std::localtime(&t);
+            std::stringstream ss;
+            ss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S");
+            std::string timestamp = ss.str();
+            CaptureScreen("screenshots/" + timestamp + ".png");
+        }
+
         m_CachedKeyState[event.key.code] = (event.type == sf::Event::KeyPressed);
     }
 
@@ -139,6 +153,15 @@ void Game::ChangeScene(const std::string& name, std::shared_ptr<Scene> scene) {
     m_Scenes[m_CurrentScene] = scene;
     
     m_Scenes[m_CurrentScene]->OnSceneEnter();
+}
+
+void Game::CaptureScreen(const std::string& path)
+{
+    sf::Texture texture;
+    texture.create(m_Window->getSize().x, m_Window->getSize().y);
+    texture.update(*m_Window);
+    texture.copyToImage().saveToFile(path);
+    NT_INFO("Captured screen to %s", path.c_str());
 }
 
 Vec2 Game::GetWindowSize() const
