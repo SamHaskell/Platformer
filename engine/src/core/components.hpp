@@ -74,8 +74,8 @@ struct CSprite : Component
         ));
 
         Sprite.setOrigin(
-            static_cast<f32>(srcw) / 2.0f, 
-            static_cast<f32>(srch)
+            srcw / 2, 
+            srch
         );
     };
 };

@@ -265,8 +265,8 @@ void SceneTest::SpawnPlayer()
     m_Player = m_World.AddEntity("player");
 
     m_Player->AddComponent<CTransform>(
-        Vec2{8, 32},
-        Vec2{1, 1},
+        Vec2{16, 64},
+        Vec2{2, 2},
         0.0f);
 
     m_Player->AddComponent<CVelocity>(
@@ -284,11 +284,11 @@ void SceneTest::SpawnPlayer()
     m_Player->AddComponent<CSpriteAnimator>(
         ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
 
-    m_Player->AddComponent<CGravity>(500.0f);
+    m_Player->AddComponent<CGravity>(800.0f);
 
     m_Player->AddComponent<CBoxCollider>(Vec2{24, 22});
 
-    m_Player->AddComponent<CPlayerController>(200.0f, 250.0f);
+    m_Player->AddComponent<CPlayerController>(400.0f, 400.0f);
 }
 
 Vec2 SceneTest::ScreenToWorld(Vec2 screenPos)
@@ -369,14 +369,20 @@ void SceneTest::UpdatePlayerMovement(f64 dt)
         vel.Velocity.y = controller.JumpSpeed;
     }
 
+    f32 moveSpeed = controller.MoveSpeed;
+    if (!controller.IsGrounded)
+    {
+        moveSpeed *= 0.8f;
+    }
+
     if (actions.Left)
     {
-        vel.Velocity.x -= controller.MoveSpeed;
+        vel.Velocity.x -= moveSpeed;
     }
 
     if (actions.Right)
     {
-        vel.Velocity.x += controller.MoveSpeed;
+        vel.Velocity.x += moveSpeed;
     }
 }
 
@@ -417,11 +423,11 @@ void SceneTest::UpdatePlayerAnimationState(f64 dt)
 
         if (actions.Left)
         {
-            tf.Scale.x = -1.0f;
+            tf.Scale.x = -1.0f * fabsf(tf.Scale.x);
         }
         else if (actions.Right)
         {
-            tf.Scale.x = 1.0f;
+            tf.Scale.x = 1.0f * fabsf(tf.Scale.x);
         }
     }
 }
@@ -490,7 +496,7 @@ void SceneTest::UpdateCamera(f64 dt)
         m_Camera.setSize(m_CameraParams.FrameWidth, m_CameraParams.FrameHeight);
 
         m_Camera.setCenter(
-            (i32)m_CameraParams.CurrentPosition.x, 
+            (i32) m_CameraParams.CurrentPosition.x, 
             (i32)(m_CameraParams.FrameHeight - m_CameraParams.CurrentPosition.y)
         );
     }
@@ -519,10 +525,10 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
         m_Player->GetComponent<CPlayerController>().IsGrounded = false;
 
         AABB playerBox = {
-            playerTransform.Position.x - playerCollider.Size.x / 2.0f,
+            playerTransform.Position.x - (playerCollider.Size.x * fabsf(playerTransform.Scale.x)) / 2.0f,
             playerTransform.Position.y,
-            playerCollider.Size.x,
-            playerCollider.Size.y};
+            playerCollider.Size.x * fabsf(playerTransform.Scale.x),
+            playerCollider.Size.y * fabsf(playerTransform.Scale.y)};
 
         struct BoxHit
         {
@@ -540,10 +546,10 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
                 auto &tf = e->GetComponent<CTransform>();
 
                 AABB tileBox = {
-                    tf.Position.x - collider.Size.x / 2.0f,
+                    tf.Position.x - (collider.Size.x * fabsf(tf.Scale.x)) / 2.0f,
                     tf.Position.y,
-                    collider.Size.x,
-                    collider.Size.y};
+                    collider.Size.x * fabsf(tf.Scale.x),
+                    collider.Size.y * fabsf(tf.Scale.x)};
 
                 RaycastHit hit{};
                 if (Physics2D::AABBcast(
@@ -576,7 +582,7 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
                 if (second_hit.Distance <= 0.0f)
                 {
                     playerTransform.Position = second_hit.Point + second_hit.Normal * 0.1f;
-                    playerTransform.Position.y -= playerCollider.Size.y / 2.0f;
+                    playerTransform.Position.y -= (playerCollider.Size.y * fabsf(playerTransform.Scale.y)) / 2.0f;
                 }
 
                 Vec2 flippedNormal = Vec2{second_hit.Normal.y, second_hit.Normal.x};
@@ -607,7 +613,7 @@ void SceneTest::RenderSprites(sf::RenderWindow *window)
             f32 rot = tf.Rotation;
             Vec2 scale = tf.Scale;
 
-            sprite.Sprite.setPosition((i32)pos.x, m_CameraParams.FrameHeight - (i32)pos.y);
+            sprite.Sprite.setPosition((i32)pos.x, (i32)m_CameraParams.FrameHeight - (i32)pos.y);
             sprite.Sprite.setRotation(rot);
             sprite.Sprite.setScale(scale.x, scale.y);
 
@@ -785,11 +791,11 @@ void SceneTest::LoadLevel(const std::string &path)
             TileData tile = m_TileData[type];
 
             Vec2 position;
-            position.x = 8.0f + (f32)value["x"] * tile.Width;
-            position.y = (f32)value["y"] * tile.Height;
+            position.x = (8.0f * 2.0f) + (f32)value["x"] * 2.0 * tile.Width;
+            position.y = (f32)value["y"] * 2.0 * tile.Height;
 
             auto e = m_World.AddEntity("tile");
-            e->AddComponent<CTransform>(position, Vec2{1.0f, 1.0f}, 0.0f);
+            e->AddComponent<CTransform>(position, Vec2{2.0f, 2.0f}, 0.0f);
             e->AddComponent<CSprite>(
                 ResourceManager::GetInstance().GetTexture(tile.TextureSource),
                 tile.OffsetX,
@@ -797,6 +803,7 @@ void SceneTest::LoadLevel(const std::string &path)
                 tile.Width,
                 tile.Height,
                 1.0f);
+
             e->AddComponent<CBoxCollider>(Vec2{(f32)tile.Width, (f32)tile.Height});
         }
     }
@@ -812,11 +819,11 @@ void SceneTest::LoadLevel(const std::string &path)
             TileData tile = m_TileData[type];
 
             Vec2 position;
-            position.x = 8.0f + (f32)value["x"] * tile.Width;
-            position.y = (f32)value["y"] * tile.Height;
+            position.x = (8.0f * 2.0f) + (f32)value["x"] * 2.0 * tile.Width;
+            position.y = (f32)value["y"] * 2.0 * tile.Height;
 
             auto e = m_World.AddEntity("decoration");
-            e->AddComponent<CTransform>(position, Vec2{1.0f, 1.0f}, 0.0f);
+            e->AddComponent<CTransform>(position, Vec2{2.0f, 2.0f}, 0.0f);
             e->AddComponent<CSprite>(
                 ResourceManager::GetInstance().GetTexture(tile.TextureSource),
                 tile.OffsetX,

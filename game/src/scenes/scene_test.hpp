@@ -14,8 +14,8 @@ struct TileData
 
 struct CameraParams
 {
-    f32 FrameWidth = 320;
-    f32 FrameHeight = 180;
+    f32 FrameWidth = 1280;
+    f32 FrameHeight = 720;
     f32 BoxWidth = 64;
     f32 BoxHeight = 128;
     f32 DampTimeX = 0.15f;
