@@ -27,6 +27,12 @@ I've had a great time putting this together over the past couple of weeks, and I
 * Tooling
   * Debug overlay for easy debugging of game during runtime
   * Early exploration for a level editor, potentially bundled in with main game executable
+ 
+## Planned Features
+
+* Scripting integration (Lua or Native C++)
+* Level Editor available as an in-engine scene, so it can be bundled with the app for player content authoring
+* Action-Key rebinding and storage of player preferences
 
 ## Installation
 
