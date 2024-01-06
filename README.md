@@ -9,6 +9,8 @@ The main aim of this project is to build out a small game experience and all the
 
 I've had a great time putting this together over the past couple of weeks, and I'm really looking forward to taking this project wherever it might go. For now I'm focused on getting something playable together, a main menu and some demo levels, before deciding on any further direction to head in.
 
+I plan to write a few things about the development of this project and my design choices [here](https://samhaskell.dev/) if you're interested.
+
 ![A screenshot of the game, with debug overlay shown](./res/game-view.png)
 
 ## Features
