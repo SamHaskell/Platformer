@@ -37,6 +37,11 @@ struct Ray
     {
         Direction.NormaliseInPlace();
     }
+
+    static Ray FromTo(Vec2 from, Vec2 to)
+    {
+        return Ray(from, to - from);
+    }
 };
 
 struct RaycastHit

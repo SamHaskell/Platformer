@@ -271,7 +271,7 @@ void SceneTest::SpawnPlayer()
     m_Player = m_World.AddEntity("player");
 
     m_Player->AddComponent<CTransform>(
-        Vec2{16, 64},
+        Vec2{16, 640},
         Vec2{2, 2},
         0.0f);
 
@@ -585,11 +585,11 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
                     Vec2::Magnitude(playerVelocity.Velocity) * dt))
             {
 
-                if (second_hit.Distance <= 0.0f)
+                if (second_hit.Distance < 0.0f)
                 {
                     playerTransform.Position = second_hit.Point + second_hit.Normal * 0.1f;
                     playerTransform.Position.y -= (playerCollider.Size.y * fabsf(playerTransform.Scale.y)) / 2.0f;
-                }
+                } 
 
                 Vec2 flippedNormal = Vec2{second_hit.Normal.y, second_hit.Normal.x};
                 playerVelocity.Velocity = flippedNormal * Vec2::Dot(flippedNormal, playerVelocity.Velocity);

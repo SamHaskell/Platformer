@@ -33,13 +33,10 @@ bool Physics2D::PointInAABB(Vec2 point, AABB a)
     return point.x > a.x && point.x < a.x + a.w && point.y > a.y && point.y < a.y + a.h;
 }
 
-Ray RayFromTo(Vec2 from, Vec2 to)
-{
-    return Ray(from, to - from);
-}
-
 bool Physics2D::Raycast(Ray ray, AABB target, RaycastHit& outHit, f32 maxDistance)
 {
+    // Grab the near and far intersection times for the rays components.
+
     Vec2 targetPos = {target.x, target.y};
 
     Vec2 tNear = (targetPos - ray.Origin) / ray.Direction;
@@ -49,8 +46,9 @@ bool Physics2D::Raycast(Ray ray, AABB target, RaycastHit& outHit, f32 maxDistanc
     if (std::isnan(tFar.x) || std::isnan(tFar.y)) { return false; }
 
     if (tNear.x > tFar.x) { std::swap(tNear.x, tFar.x); }
-
     if (tNear.y > tFar.y) { std::swap(tNear.y, tFar.y); }
+
+    // Now interpret results.
 
     if (tNear.x > tFar.y || tNear.y > tFar.x) { return false; }
 
