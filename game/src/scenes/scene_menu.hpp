@@ -16,7 +16,7 @@ class SceneMenu : public Scene {
         void DrawGUI() override;
 
     private:
-        void PhysicsCheckButtons(f64 dt);
+        void PhysicsCheckButtons(World& world, f64 dt);
         void AddTestButton();
 
         struct SystemToggles

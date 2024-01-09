@@ -39,9 +39,9 @@ void SceneMenu::AddTestButton()
     };
 }
 
-void SceneMenu::PhysicsCheckButtons(f64 dt)
+void SceneMenu::PhysicsCheckButtons(World& world, f64 dt)
 {
-    auto buttons = m_World.GetEntitiesWithTag("button");
+    auto buttons = world.GetEntitiesWithTag("button");
 
     for (auto e : buttons)
     {
@@ -175,7 +175,7 @@ void SceneMenu::Update(f64 dt)
 
     if (m_SystemToggles.PhysicsCheckButtons)
     {
-        PhysicsCheckButtons(dt);
+        PhysicsCheckButtons(m_World, dt);
     }
 }
 
