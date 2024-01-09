@@ -72,9 +72,9 @@ class SceneTest : public Scene {
             bool PhysicsCheckCollisions = true;
             bool RenderBackground = true;
             bool RenderSprites = true;
-            bool DebugRenderWorldGrid = false;
-            bool DebugRenderColliders = false;
-            bool DebugRenderCamera = false;
+            bool DebugRenderWorldGrid = true;
+            bool DebugRenderColliders = true;
+            bool DebugRenderCamera = true;
         } 
         m_SystemToggles;
 

@@ -271,7 +271,7 @@ void SceneTest::SpawnPlayer()
     m_Player = m_World.AddEntity("player");
 
     m_Player->AddComponent<CTransform>(
-        Vec2{16, 62},
+        Vec2{16, 1280},
         Vec2{2, 2},
         0.0f);
 
@@ -290,11 +290,11 @@ void SceneTest::SpawnPlayer()
     m_Player->AddComponent<CSpriteAnimator>(
         ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
 
-    m_Player->AddComponent<CGravity>(800.0f);
+    m_Player->AddComponent<CGravity>(1600.0f);
 
     m_Player->AddComponent<CBoxCollider>(Vec2{24, 22});
 
-    m_Player->AddComponent<CPlayerController>(400.0f, 400.0f);
+    m_Player->AddComponent<CPlayerController>(400.0f, 800.0f);
 }
 
 Vec2 SceneTest::ScreenToWorld(Vec2 screenPos)
@@ -373,6 +373,9 @@ void SceneTest::UpdatePlayerMovement(f64 dt)
     if (actions.Jump && controller.IsGrounded)
     {
         vel.Velocity.y = controller.JumpSpeed;
+    } else if (!actions.Jump)
+    {
+        vel.Velocity.y = Maths::Clamp(vel.Velocity.y, vel.Velocity.y, controller.JumpSpeed * 0.5f);
     }
 
     f32 moveSpeed = controller.MoveSpeed;
@@ -710,7 +713,7 @@ void SceneTest::DebugRenderWorldGrid(sf::RenderWindow *window)
     {
         for (i32 j = gridTop; j <= gridBottom; j += 32)
         {
-            Vec2 screenPos = WorldToScreen({(f32)i + 2, (f32)j + 62});
+            Vec2 screenPos = WorldToScreen({(f32)i + 2, (f32)j + 30});
             text.setString(std::to_string(i / 32) + ", " + std::to_string(j / 32));
             text.setPosition(screenPos.x, screenPos.y);
             window->draw(text);

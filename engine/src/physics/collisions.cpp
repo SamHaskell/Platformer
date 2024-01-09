@@ -83,11 +83,6 @@ bool Physics2D::Raycast(Ray ray, AABB target, RaycastHit& outHit, f32 maxDistanc
         }
     }
 
-    if (Vec2::Dot(ray.Direction, outHit.Normal) > 0.f)
-    {
-        return false;
-    }
-
     return (tHitNear < maxDistance);
 }
 
