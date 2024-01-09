@@ -271,7 +271,7 @@ void SceneTest::SpawnPlayer()
     m_Player = m_World.AddEntity("player");
 
     m_Player->AddComponent<CTransform>(
-        Vec2{16, 640},
+        Vec2{16, 62},
         Vec2{2, 2},
         0.0f);
 
@@ -584,6 +584,7 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
                     second_hit,
                     Vec2::Magnitude(playerVelocity.Velocity) * dt))
             {
+                f32 dist = Vec2::Magnitude(playerVelocity.Velocity) * dt;
 
                 if (second_hit.Distance < 0.0f)
                 {
