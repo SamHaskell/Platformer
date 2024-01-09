@@ -11,32 +11,39 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
-void SceneMenu::AddTestButton()
+void SceneMenu::AddTestButtons()
 {
     auto e = m_World.AddEntity("button");
-    
-    auto coll = e->AddComponent<CBoxCollider>(Vec2{256, 64});
-    
-    e->AddComponent<CTransform>(Vec2{0, 0}, Vec2{1, 1}, 0.0f);
+    {    
+        auto& coll = e->AddComponent<CBoxCollider>(Vec2{256, 64});
+        auto& tf = e->AddComponent<CTransform>(Vec2{0, 64}, Vec2{1, 1}, 0.0f);
+        auto& button = e->AddComponent<CButton>();
 
-    auto& button = e->AddComponent<CButton>();
+        button.OnHoverEnter = [this]() { NT_INFO("Hovering over button."); };
+        button.OnHoverExit = [this]() { NT_INFO("No longer hovering over button."); };
+        button.OnRelease = [this]() { NT_INFO("Released button."); };
 
-    button.OnHoverEnter = [this]() {
-        NT_INFO("Hovering over button.");
-    };
+        button.OnPress = [this]() {
+            NT_INFO("Changing to Level 1.");
+            m_Game->ChangeScene("Level_1", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_1.json"));
+        };
+    }
 
-    button.OnHoverExit = [this]() {
-        NT_INFO("No longer hovering over button.");
-    };
+    auto e2 = m_World.AddEntity("button");
+    {
+        auto& coll = e2->AddComponent<CBoxCollider>(Vec2{256, 64});
+        auto& tf = e2->AddComponent<CTransform>(Vec2{0, 0}, Vec2{1, 1}, 0.0f);
+        auto& button = e2->AddComponent<CButton>();
 
-    button.OnPress = [this]() {
-        NT_INFO("Changing to test scene.");
-        m_Game->ChangeScene("TestScene", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_1.json"));
-    };
+        button.OnHoverEnter = [this]() { NT_INFO("Hovering over button."); };
+        button.OnHoverExit = [this]() { NT_INFO("No longer hovering over button."); };
+        button.OnRelease = [this]() { NT_INFO("Released button."); };
 
-    button.OnRelease = [this]() {
-        NT_INFO("Released button.");
-    };
+        button.OnPress = [this]() {
+            NT_INFO("Changing to Level 2.");
+            m_Game->ChangeScene("Level_2", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_2.json"));
+        };
+    }
 }
 
 void SceneMenu::PhysicsCheckButtons(World& world, f64 dt)
@@ -66,8 +73,6 @@ void SceneMenu::PhysicsCheckButtons(World& world, f64 dt)
 
         if (Physics2D::PointInAABB(mouseWorldPos, buttonBox))
         {
-            NT_INFO("Button Found!");
-
             if (!button.IsDown && leftClick)
             {
                 button.IsDown = true;
@@ -115,7 +120,7 @@ void SceneMenu::OnSceneEnter()
     RegisterAction(sf::Keyboard::Space, "EnterPlayScene");
     RegisterAction(sf::Keyboard::F1, "ToggleDebugOverlay");
 
-    AddTestButton();
+    AddTestButtons();
 
     NT_INFO("Entering menu scene.");
 

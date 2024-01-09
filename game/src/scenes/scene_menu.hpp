@@ -17,7 +17,7 @@ class SceneMenu : public Scene {
 
     private:
         void PhysicsCheckButtons(World& world, f64 dt);
-        void AddTestButton();
+        void AddTestButtons();
 
         struct SystemToggles
         {
