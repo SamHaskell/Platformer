@@ -140,3 +140,16 @@ struct CBoxCollider : Component
     CBoxCollider() = default;
     CBoxCollider(Vec2 size) : Size(size) {}
 };
+
+struct CButton : Component
+{
+    bool IsDown = false;
+    std::function<void()> OnPress = [](){};
+    std::function<void()> OnRelease = [](){};
+    std::function<void()> OnHoverEnter = [](){};
+    std::function<void()> OnHoverExit = [](){};
+
+    CButton() = default;
+    CButton(std::function<void()> onPress, std::function<void()> onRelease, std::function<void()> onHoverEnter, std::function<void()> onHoverExit) : 
+        OnPress(onPress), OnRelease(onRelease), OnHoverEnter(onHoverEnter), OnHoverExit(onHoverExit) {};
+};

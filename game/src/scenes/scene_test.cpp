@@ -1,7 +1,11 @@
 #include "scene_test.hpp"
+#include "../systems/debugsystems.hpp"
+#include "../systems/rendersystems.hpp"
+#include "../systems/updatesystems.hpp"
 
 #include "core/game.hpp"
 #include "core/resources.hpp"
+#include "core/scene.hpp"
 #include "maths/maths.hpp"
 #include "physics/collisions.hpp"
 
@@ -84,7 +88,7 @@ void SceneTest::Update(f64 dt)
 
     if (m_SystemToggles.UpdateGravity)
     {
-        UpdateGravity(dt);
+        Systems::UpdateGravity(m_World, dt);
     }
 
     if (m_SystemToggles.UpdatePlayerMovement)
@@ -99,7 +103,7 @@ void SceneTest::Update(f64 dt)
 
     if (m_SystemToggles.UpdatePositions)
     {
-        UpdatePositions(dt);
+        Systems::UpdatePositions(m_World, dt);
     }
 
     if (m_SystemToggles.UpdatePlayerAnimationState)
@@ -122,17 +126,17 @@ void SceneTest::Render(sf::RenderWindow *window)
 {
     if (m_SystemToggles.RenderBackground)
     {
-        RenderBackground(window);
+        Systems::RenderBackground(window);
     }
 
     if (m_SystemToggles.RenderSprites)
     {
-        RenderSprites(window);
+        Systems::RenderSprites(window, m_World, m_Camera, m_CameraParams);
     }
 
     if (m_SystemToggles.DebugRenderColliders)
     {
-        DebugRenderColliders(window);
+        Systems::DebugRenderColliders(window, m_World, m_Camera, m_CameraParams);
     }
 
     if (m_SystemToggles.DebugRenderWorldGrid)
@@ -297,55 +301,7 @@ void SceneTest::SpawnPlayer()
     m_Player->AddComponent<CPlayerController>(400.0f, 800.0f);
 }
 
-Vec2 SceneTest::ScreenToWorld(Vec2 screenPos)
-{
-    Vec2 worldPos;
-    Vec2 windowSize = m_Game->GetWindowSize();
-    sf::Vector2f cameraPos = m_Camera.getCenter();
-    sf::Vector2f cameraSize = m_Camera.getSize();
 
-    worldPos.x = ((screenPos.x / windowSize.x) - 0.5f) * cameraSize.x + cameraPos.x;
-    worldPos.y = (1.5f - (screenPos.y / windowSize.y)) * cameraSize.y - cameraPos.y;
-    return worldPos;
-}
-
-Vec2 SceneTest::WorldToScreen(Vec2 worldPos)
-{
-    Vec2 screenPos;
-    Vec2 windowSize = m_Game->GetWindowSize();
-    sf::Vector2f cameraPos = m_Camera.getCenter();
-    sf::Vector2f cameraSize = m_Camera.getSize();
-
-    screenPos.x = ((worldPos.x - cameraPos.x) / cameraSize.x + 0.5f) * windowSize.x;
-    screenPos.y = -((worldPos.y + cameraPos.y) / cameraSize.y - 1.5f) * windowSize.y;
-    return screenPos;
-}
-
-void SceneTest::UpdatePositions(f64 dt)
-{
-    for (auto e : m_World.GetEntities())
-    {
-        if (e->HasComponent<CVelocity>() && e->HasComponent<CTransform>())
-        {
-            auto &tf = e->GetComponent<CTransform>();
-            auto &vel = e->GetComponent<CVelocity>();
-            tf.Position += vel.Velocity * dt;
-            tf.Rotation += vel.AngularVelocity * dt;
-        }
-    }
-}
-
-void SceneTest::UpdateGravity(f64 dt)
-{
-    for (auto e : m_World.GetEntities())
-    {
-        if (e->HasComponent<CGravity>() && e->HasComponent<CVelocity>())
-        {
-            auto &vel = e->GetComponent<CVelocity>();
-            vel.Velocity.y -= e->GetComponent<CGravity>().Gravity * dt;
-        }
-    }
-}
 
 void SceneTest::UpdatePlayerMovement(f64 dt)
 {
@@ -607,59 +563,6 @@ void SceneTest::PhysicsCheckCollisions(f64 dt)
     }
 }
 
-void SceneTest::RenderBackground(sf::RenderWindow* window)
-{
-    window->setView(window->getDefaultView());
-
-    // Draw background texture to whole screen
-
-    sf::Texture& tex = ResourceManager::GetInstance().GetTexture("tex_background");
-
-    auto texSize = tex.getSize();
-    auto windowSize = window->getSize();
-
-    sf::Sprite sprite(tex);
-    sprite.setScale(
-        (f32)windowSize.x / (f32)texSize.x,
-        (f32)windowSize.y / (f32)texSize.y
-    );
-
-    window->draw(sprite);
-}
-
-void SceneTest::RenderSprites(sf::RenderWindow *window)
-{
-    window->setView(m_Camera);
-
-    std::vector<CSprite *> sprites;
-
-    for (auto e : m_World.GetEntities())
-    {
-        if (e->HasComponent<CSprite>() && e->HasComponent<CTransform>())
-        {
-            auto &sprite = e->GetComponent<CSprite>();
-            auto &tf = e->GetComponent<CTransform>();
-            Vec2 pos = tf.Position;
-            f32 rot = tf.Rotation;
-            Vec2 scale = tf.Scale;
-
-            sprite.Sprite.setPosition((i32)pos.x, (i32)m_CameraParams.FrameHeight - (i32)pos.y);
-            sprite.Sprite.setRotation(rot);
-            sprite.Sprite.setScale(scale.x, scale.y);
-
-            sprites.push_back(&sprite);
-        }
-    }
-
-    std::sort(sprites.begin(), sprites.end(), [](CSprite *a, CSprite *b)
-              { return a->Depth < b->Depth; });
-
-    for (auto sprite : sprites)
-    {
-        window->draw(sprite->Sprite);
-    }
-}
-
 void SceneTest::DebugRenderWorldGrid(sf::RenderWindow *window)
 {
     window->setView(window->getDefaultView());
@@ -717,36 +620,6 @@ void SceneTest::DebugRenderWorldGrid(sf::RenderWindow *window)
             text.setString(std::to_string(i / 32) + ", " + std::to_string(j / 32));
             text.setPosition(screenPos.x, screenPos.y);
             window->draw(text);
-        }
-    }
-}
-
-void SceneTest::DebugRenderColliders(sf::RenderWindow *window)
-{
-    window->setView(m_Camera);
-
-    for (auto e : m_World.GetEntities())
-    {
-        if (e->HasComponent<CBoxCollider>() && e->HasComponent<CTransform>())
-        {
-            auto &tf = e->GetComponent<CTransform>();
-            auto &collider = e->GetComponent<CBoxCollider>();
-
-            Vec2 pos = tf.Position;
-            Vec2 scale = tf.Scale;
-            Vec2 size = collider.Size;
-
-            sf::Color col = sf::Color::Red;
-            col.a = 255;
-
-            sf::RectangleShape rect(sf::Vector2f(size.x, size.y));
-            rect.setFillColor(sf::Color::Transparent);
-            rect.setOutlineColor(col);
-            rect.setOutlineThickness(0.2f);
-            rect.setOrigin(size.x / 2.0f, size.y);
-            rect.setPosition((i32)pos.x, m_CameraParams.FrameHeight - (i32)pos.y);
-            rect.setScale(scale.x, scale.y);
-            window->draw(rect, sf::BlendAlpha);
         }
     }
 }
