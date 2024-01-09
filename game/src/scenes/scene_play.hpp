@@ -12,10 +12,10 @@ struct TileData
     i32 OffsetY;
 };
 
-class SceneTest : public Scene {
+class ScenePlay : public Scene {
     public:
-        SceneTest(Game* game, const char* levelPath);
-        ~SceneTest() = default;
+        ScenePlay(Game* game, const char* levelPath);
+        ~ScenePlay() = default;
 
         void OnSceneEnter() override;
         void OnSceneExit() override;
@@ -25,18 +25,10 @@ class SceneTest : public Scene {
         void DrawGUI() override;
 
     private:
-        void SpawnPlayer();
-        
-        void UpdatePlayerMovement(f64 dt);
-        void UpdatePlayerAnimationState(f64 dt);
-        void UpdateAnimations(f64 dt);
-        void UpdateCamera(f64 dt);
-
-        void PhysicsCheckCollisions(f64 dt);
-
         void DebugRenderWorldGrid(sf::RenderWindow* window);
         void DebugRenderCamera(sf::RenderWindow* window);
-
+        
+        void SpawnPlayer();
         void LoadLevel(const std::string& path);
 
     private:

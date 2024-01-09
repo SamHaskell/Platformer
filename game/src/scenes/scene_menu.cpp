@@ -1,10 +1,13 @@
 #include "scene_menu.hpp"
-#include "scene_test.hpp"
+#include "scene_play.hpp"
+
 #include "../systems/debugsystems.hpp"
 #include "../systems/rendersystems.hpp"
 
 #include "core/game.hpp"
 #include "core/resources.hpp"
+#include "physics/collisions.hpp"
+
 #include "imgui.h"
 #include "imgui-SFML.h"
 
@@ -28,8 +31,75 @@ void SceneMenu::AddTestButton()
 
     button.OnPress = [this]() {
         NT_INFO("Changing to test scene.");
-        m_Game->ChangeScene("TestScene", std::make_shared<SceneTest>(m_Game, "assets/levels/level_1.json"));
+        m_Game->ChangeScene("TestScene", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_1.json"));
     };
+
+    button.OnRelease = [this]() {
+        NT_INFO("Released button.");
+    };
+}
+
+void SceneMenu::PhysicsCheckButtons(f64 dt)
+{
+    auto buttons = m_World.GetEntitiesWithTag("button");
+
+    for (auto e : buttons)
+    {
+        auto& button = e->GetComponent<CButton>();
+
+        // Check mouse position and button collider.
+
+        auto& coll = e->GetComponent<CBoxCollider>();
+        auto& tf = e->GetComponent<CTransform>();
+
+        AABB buttonBox = {
+            tf.Position.x - coll.Size.x / 2.0f,
+            tf.Position.y,
+            coll.Size.x,
+            coll.Size.y
+        };
+
+        Vec2 mousePos = m_Game->GetMousePosition();
+        Vec2 mouseWorldPos = ScreenToWorld(mousePos);
+
+        bool leftClick = m_Game->IsMouseButtonDown(sf::Mouse::Left);
+
+        if (Physics2D::PointInAABB(mouseWorldPos, buttonBox))
+        {
+            NT_INFO("Button Found!");
+
+            if (!button.IsDown && leftClick)
+            {
+                button.IsDown = true;
+                button.OnPress();
+            }
+            else if (button.IsDown && !leftClick)
+            {
+                button.IsDown = false;
+                button.OnRelease();
+            }
+
+            if (!button.IsHovering)
+            {
+                button.IsHovering = true;
+                button.OnHoverEnter();
+            }
+        }
+        else
+        {
+            if (button.IsDown)
+            {
+                button.IsDown = false;
+                button.OnRelease();
+            }
+            else if (button.IsHovering)
+            {
+                button.IsHovering = false;
+                button.OnHoverExit();
+            }
+
+        }
+    }
 }
 
 SceneMenu::SceneMenu(Game *game) : Scene(game)
@@ -42,9 +112,7 @@ void SceneMenu::OnSceneEnter()
     RegisterAction(sf::Keyboard::Left, "Left");
     RegisterAction(sf::Keyboard::Right, "Right");
     RegisterAction(sf::Keyboard::Down, "Down");
-
-    RegisterAction(sf::Keyboard::Space, "EnterTestScene");
-
+    RegisterAction(sf::Keyboard::Space, "EnterPlayScene");
     RegisterAction(sf::Keyboard::F1, "ToggleDebugOverlay");
 
     AddTestButton();
@@ -86,10 +154,10 @@ void SceneMenu::OnAction(Action action)
     {
 
     }
-    else if (action.Name == "EnterTestScene")
+    else if (action.Name == "EnterPlayScene")
     {
-        NT_INFO("Changing to test scene.");
-        m_Game->ChangeScene("TestScene", std::make_shared<SceneTest>(m_Game, "assets/levels/level_1.json"));
+        NT_INFO("Changing to play scene.");
+        m_Game->ChangeScene("PlayScene", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_1.json"));
     }
     else if (action.Name == "ToggleDebugOverlay" && action.Type == ActionType::Begin)
     {
@@ -105,15 +173,10 @@ void SceneMenu::Update(f64 dt)
 {
     m_World.Update();
 
-    // if (m_SystemToggles.UpdatePositions)
-    // {
-    //     m_World.UpdatePositions(dt);
-    // }
-
-    // if (m_SystemToggles.UpdateAnimations)
-    // {
-    //     m_World.UpdateAnimations(dt);
-    // }
+    if (m_SystemToggles.PhysicsCheckButtons)
+    {
+        PhysicsCheckButtons(dt);
+    }
 }
 
 void SceneMenu::Render(sf::RenderWindow *window)
@@ -193,6 +256,8 @@ void SceneMenu::DrawGUI()
             ImGui::Checkbox("UpdateAnimations", &m_SystemToggles.UpdateAnimations);
 
             ImGui::SeparatorText("OnPhysicsUpdate");
+
+            ImGui::Checkbox("PhysicsCheckButtons", &m_SystemToggles.PhysicsCheckButtons);
 
             ImGui::SeparatorText("OnRender");
 

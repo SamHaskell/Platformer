@@ -1,7 +1,9 @@
-#include "scene_test.hpp"
+#include "scene_play.hpp"
+
 #include "../systems/debugsystems.hpp"
 #include "../systems/rendersystems.hpp"
 #include "../systems/updatesystems.hpp"
+#include "../systems/physicssystems.hpp"
 
 #include "core/game.hpp"
 #include "core/resources.hpp"
@@ -15,12 +17,12 @@
 #include <map>
 #include <fstream>
 
-SceneTest::SceneTest(Game *game, const char* levelPath) : Scene(game)
+ScenePlay::ScenePlay(Game *game, const char* levelPath) : Scene(game)
 {
     LoadLevel(levelPath);
 }
 
-void SceneTest::OnSceneEnter()
+void ScenePlay::OnSceneEnter()
 {
     // Register actions.
 
@@ -28,9 +30,7 @@ void SceneTest::OnSceneEnter()
     RegisterAction(sf::Keyboard::Left, "Left");
     RegisterAction(sf::Keyboard::Right, "Right");
     RegisterAction(sf::Keyboard::Down, "Down");
-
     RegisterAction(sf::Keyboard::Space, "Jump");
-
     RegisterAction(sf::Keyboard::F1, "ToggleDebugOverlay");
 
     NT_INFO("Entering test scene.");
@@ -38,12 +38,12 @@ void SceneTest::OnSceneEnter()
     SpawnPlayer();
 }
 
-void SceneTest::OnSceneExit()
+void ScenePlay::OnSceneExit()
 {
     NT_INFO("Exiting test scene.");
 }
 
-void SceneTest::OnAction(Action action)
+void ScenePlay::OnAction(Action action)
 {
     auto &playerActions = m_Player->GetComponent<CPlayerActions>();
 
@@ -82,7 +82,7 @@ void SceneTest::OnAction(Action action)
     }
 }
 
-void SceneTest::Update(f64 dt)
+void ScenePlay::Update(f64 dt)
 {
     m_World.Update();
 
@@ -93,12 +93,12 @@ void SceneTest::Update(f64 dt)
 
     if (m_SystemToggles.UpdatePlayerMovement)
     {
-        UpdatePlayerMovement(dt);
+        Systems::UpdatePlayerMovement(m_Player, dt);
     }
 
     if (m_SystemToggles.PhysicsCheckCollisions)
     {
-        PhysicsCheckCollisions(dt);
+        Systems::PhysicsCheckCollisions(m_World, dt);
     }
 
     if (m_SystemToggles.UpdatePositions)
@@ -108,21 +108,21 @@ void SceneTest::Update(f64 dt)
 
     if (m_SystemToggles.UpdatePlayerAnimationState)
     {
-        UpdatePlayerAnimationState(dt);
+        Systems::UpdatePlayerAnimationState(m_Player, dt);
     }
 
     if (m_SystemToggles.UpdateAnimations)
     {
-        UpdateAnimations(dt);
+        Systems::UpdateAnimations(m_World, dt);
     }
 
     if (m_SystemToggles.UpdateCamera)
     {
-        UpdateCamera(dt);
+        Systems::UpdateCamera(m_World, dt, m_Camera, m_CameraParams);
     }
 }
 
-void SceneTest::Render(sf::RenderWindow *window)
+void ScenePlay::Render(sf::RenderWindow *window)
 {
     if (m_SystemToggles.RenderBackground)
     {
@@ -150,7 +150,7 @@ void SceneTest::Render(sf::RenderWindow *window)
     }
 }
 
-void SceneTest::DrawGUI()
+void ScenePlay::DrawGUI()
 {
     if (!m_ShowDebugOverlay)
     {
@@ -265,7 +265,7 @@ void SceneTest::DrawGUI()
     ImGui::End();
 }
 
-void SceneTest::SpawnPlayer()
+void ScenePlay::SpawnPlayer()
 {
     if (m_Player != nullptr)
     {
@@ -301,269 +301,7 @@ void SceneTest::SpawnPlayer()
     m_Player->AddComponent<CPlayerController>(400.0f, 800.0f);
 }
 
-
-
-void SceneTest::UpdatePlayerMovement(f64 dt)
-{
-    if (!m_Player->HasComponent<CPlayerActions>())
-    {
-        return;
-    }
-
-    if (!m_Player->HasComponent<CVelocity>())
-    {
-        return;
-    }
-
-    if (!m_Player->HasComponent<CPlayerController>())
-    {
-        return;
-    }
-
-    auto &actions = m_Player->GetComponent<CPlayerActions>();
-    auto &vel = m_Player->GetComponent<CVelocity>();
-    auto &controller = m_Player->GetComponent<CPlayerController>();
-
-    vel.Velocity.x = 0.0f;
-
-    if (actions.Jump && controller.IsGrounded)
-    {
-        vel.Velocity.y = controller.JumpSpeed;
-    } else if (!actions.Jump)
-    {
-        vel.Velocity.y = Maths::Clamp(vel.Velocity.y, vel.Velocity.y, controller.JumpSpeed * 0.5f);
-    }
-
-    f32 moveSpeed = controller.MoveSpeed;
-    if (!controller.IsGrounded)
-    {
-        moveSpeed *= 0.8f;
-    }
-
-    if (actions.Left)
-    {
-        vel.Velocity.x -= moveSpeed;
-    }
-
-    if (actions.Right)
-    {
-        vel.Velocity.x += moveSpeed;
-    }
-}
-
-void SceneTest::UpdatePlayerAnimationState(f64 dt)
-{
-    if (!m_Player->HasComponent<CPlayerActions>())
-    {
-        return;
-    }
-
-    auto &actions = m_Player->GetComponent<CPlayerActions>();
-
-    if (m_Player->HasComponent<CTransform>() && m_Player->HasComponent<CSpriteAnimator>())
-    {
-        auto &anim = m_Player->GetComponent<CSpriteAnimator>();
-        auto &tf = m_Player->GetComponent<CTransform>();
-
-        if (m_Player->HasComponent<CVelocity>() && fabsf(m_Player->GetComponent<CVelocity>().Velocity.y) > 10.0f)
-        {
-            auto &vel = m_Player->GetComponent<CVelocity>();
-            if (vel.Velocity.y > 1.0f)
-            {
-                anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_rise"));
-            }
-            else if (vel.Velocity.y < 1.0f)
-            {
-                anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_fall"));
-            }
-        }
-        else if (actions.Left || actions.Right)
-        {
-            anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_run"));
-        }
-        else
-        {
-            anim.SetAnimation(ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
-        }
-
-        if (actions.Left)
-        {
-            tf.Scale.x = -1.0f * fabsf(tf.Scale.x);
-        }
-        else if (actions.Right)
-        {
-            tf.Scale.x = 1.0f * fabsf(tf.Scale.x);
-        }
-    }
-}
-
-void SceneTest::UpdateAnimations(f64 dt)
-{
-    for (auto e : m_World.GetEntities())
-    {
-        if (e->HasComponent<CSpriteAnimator>())
-        {
-            auto &anim = e->GetComponent<CSpriteAnimator>();
-            anim.TimeAccumulator += dt;
-
-            while (anim.TimeAccumulator > anim.AnimationSource.FrameTime)
-            {
-                anim.TimeAccumulator -= anim.AnimationSource.FrameTime;
-                anim.CurrentFrame++;
-            }
-
-            if (anim.CurrentFrame == anim.AnimationSource.FrameCount)
-            {
-                anim.IsFinished = true;
-                if (anim.IsLooping)
-                {
-                    anim.CurrentFrame = 0;
-                }
-                else
-                {
-                    anim.CurrentFrame = anim.AnimationSource.FrameCount - 1;
-                }
-            }
-            else
-            {
-                anim.IsFinished = false;
-            }
-
-            if (e->HasComponent<CSprite>())
-            {
-                auto &sprite = e->GetComponent<CSprite>();
-
-                sprite.Sprite.setTexture(
-                    ResourceManager::GetInstance().GetTexture(anim.AnimationSource.TextureSourceName));
-
-                sprite.Sprite.setTextureRect(sf::IntRect(
-                    anim.AnimationSource.OffsetX + (anim.AnimationSource.FrameWidth * anim.CurrentFrame),
-                    anim.AnimationSource.OffsetY,
-                    anim.AnimationSource.FrameWidth,
-                    anim.AnimationSource.FrameHeight));
-            }
-        }
-    }
-}
-
-void SceneTest::UpdateCamera(f64 dt)
-{
-    if (m_Player->HasComponent<CTransform>())
-    {
-        Vec2 playerPos = m_Player->GetComponent<CTransform>().Position;
-        m_CameraParams.CurrentTarget = playerPos;
-
-        m_CameraParams.CurrentPosition = Vec2{
-            Maths::Lerp(m_CameraParams.CurrentPosition.x, m_CameraParams.CurrentTarget.x, (1.0f / m_CameraParams.DampTimeX) * dt),
-            Maths::Lerp(m_CameraParams.CurrentPosition.y, m_CameraParams.CurrentTarget.y, (1.0f / m_CameraParams.DampTimeY) * dt)
-        };
-
-        m_Camera.setSize(m_CameraParams.FrameWidth, m_CameraParams.FrameHeight);
-
-        m_Camera.setCenter(
-            (i32) m_CameraParams.CurrentPosition.x, 
-            (i32)(m_CameraParams.FrameHeight - m_CameraParams.CurrentPosition.y)
-        );
-    }
-}
-
-void SceneTest::PhysicsCheckCollisions(f64 dt)
-{
-    /*
-        Swept AABB (interpolated) collision checks for player controller.
-        Intensive, but only performed for the player so probably fine.
-        If wanted to extend to some generic rigidbody then would certainly need to optimise, e.g. broadphase checks first.
-
-        Currently we check for collisions with all tiles, order hits based on distance and then
-        iterate through a second time, running another collision check. This is to ensure
-        the player does not get stuck at boundaries between tiles.
-    */
-
-    // Check collisions between player and tiles
-
-    if (m_Player->HasComponent<CBoxCollider>() && m_Player->HasComponent<CTransform>() && m_Player->HasComponent<CVelocity>())
-    {
-        auto &playerCollider = m_Player->GetComponent<CBoxCollider>();
-        auto &playerTransform = m_Player->GetComponent<CTransform>();
-        auto &playerVelocity = m_Player->GetComponent<CVelocity>();
-
-        m_Player->GetComponent<CPlayerController>().IsGrounded = false;
-
-        AABB playerBox = {
-            playerTransform.Position.x - (playerCollider.Size.x * fabsf(playerTransform.Scale.x)) / 2.0f,
-            playerTransform.Position.y,
-            playerCollider.Size.x * fabsf(playerTransform.Scale.x),
-            playerCollider.Size.y * fabsf(playerTransform.Scale.y)};
-
-        struct BoxHit
-        {
-            AABB box;
-            RaycastHit hit;
-        };
-
-        std::vector<BoxHit> hits;
-
-        for (auto e : m_World.GetEntitiesWithTag("tile"))
-        {
-            if (e->HasComponent<CBoxCollider>() && e->HasComponent<CTransform>())
-            {
-                auto &collider = e->GetComponent<CBoxCollider>();
-                auto &tf = e->GetComponent<CTransform>();
-
-                AABB tileBox = {
-                    tf.Position.x - (collider.Size.x * fabsf(tf.Scale.x)) / 2.0f,
-                    tf.Position.y,
-                    collider.Size.x * fabsf(tf.Scale.x),
-                    collider.Size.y * fabsf(tf.Scale.x)};
-
-                RaycastHit hit{};
-                if (Physics2D::AABBcast(
-                        playerBox,
-                        tileBox,
-                        Vec2::Normalised(playerVelocity.Velocity),
-                        hit,
-                        Vec2::Magnitude(playerVelocity.Velocity) * dt))
-                {
-                    BoxHit boxhit = {tileBox, hit};
-                    hits.push_back(boxhit);
-                }
-            }
-        }
-
-        std::sort(hits.begin(), hits.end(), [](BoxHit a, BoxHit b)
-                  { return a.hit.Distance < b.hit.Distance; });
-
-        for (auto hit : hits)
-        {
-            RaycastHit second_hit{};
-            if (Physics2D::AABBcast(
-                    playerBox,
-                    hit.box,
-                    Vec2::Normalised(playerVelocity.Velocity),
-                    second_hit,
-                    Vec2::Magnitude(playerVelocity.Velocity) * dt))
-            {
-                f32 dist = Vec2::Magnitude(playerVelocity.Velocity) * dt;
-
-                if (second_hit.Distance < 0.0f)
-                {
-                    playerTransform.Position = second_hit.Point + second_hit.Normal * 0.1f;
-                    playerTransform.Position.y -= (playerCollider.Size.y * fabsf(playerTransform.Scale.y)) / 2.0f;
-                } 
-
-                Vec2 flippedNormal = Vec2{second_hit.Normal.y, second_hit.Normal.x};
-                playerVelocity.Velocity = flippedNormal * Vec2::Dot(flippedNormal, playerVelocity.Velocity);
-
-                if (second_hit.Normal.y > 0.0f)
-                {
-                    m_Player->GetComponent<CPlayerController>().IsGrounded = true;
-                }
-            }
-        }
-    }
-}
-
-void SceneTest::DebugRenderWorldGrid(sf::RenderWindow *window)
+void ScenePlay::DebugRenderWorldGrid(sf::RenderWindow *window)
 {
     window->setView(window->getDefaultView());
 
@@ -624,7 +362,7 @@ void SceneTest::DebugRenderWorldGrid(sf::RenderWindow *window)
     }
 }
 
-void SceneTest::DebugRenderCamera(sf::RenderWindow *window)
+void ScenePlay::DebugRenderCamera(sf::RenderWindow *window)
 {
     window->setView(m_Camera);
 
@@ -646,7 +384,7 @@ void SceneTest::DebugRenderCamera(sf::RenderWindow *window)
     window->draw(rect, sf::BlendAlpha);
 }
 
-void SceneTest::LoadLevel(const std::string &path)
+void ScenePlay::LoadLevel(const std::string &path)
 {
     m_World = World();
     NT_INFO("Loading level from file: %s", path.c_str());

@@ -144,6 +144,8 @@ struct CBoxCollider : Component
 struct CButton : Component
 {
     bool IsDown = false;
+    bool IsHovering = false;
+
     std::function<void()> OnPress = [](){};
     std::function<void()> OnRelease = [](){};
     std::function<void()> OnHoverEnter = [](){};

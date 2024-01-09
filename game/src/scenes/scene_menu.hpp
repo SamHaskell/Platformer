@@ -16,18 +16,20 @@ class SceneMenu : public Scene {
         void DrawGUI() override;
 
     private:
+        void PhysicsCheckButtons(f64 dt);
+        void AddTestButton();
+
         struct SystemToggles
         {
             bool UpdatePositions = true;
             bool UpdateAnimations = true;
+            bool PhysicsCheckButtons = true;
             bool RenderBackground = true;
             bool RenderSprites = true;
             bool DebugRenderWorldGrid = true;
             bool DebugRenderColliders = true;
         } 
         m_SystemToggles;
-
-        void AddTestButton();
 
         bool m_ShowDebugOverlay = true;
 };

@@ -23,7 +23,11 @@ class Game {
 
         void ChangeScene(const std::string& name, std::shared_ptr<Scene> scene);
         void CaptureScreen(const std::string& path);
+
         Vec2 GetWindowSize() const;
+        Vec2 GetMousePosition() const;
+
+        bool IsMouseButtonDown(sf::Mouse::Button button) const;
 
     private:
         Clock m_Clock;

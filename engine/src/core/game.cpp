@@ -168,3 +168,13 @@ Vec2 Game::GetWindowSize() const
 {
     return Vec2{(f32)m_Window->getSize().x, (f32)m_Window->getSize().y};
 }
+
+Vec2 Game::GetMousePosition() const
+{
+    return Vec2{(f32)sf::Mouse::getPosition(*m_Window).x, (f32)sf::Mouse::getPosition(*m_Window).y};
+}
+
+bool Game::IsMouseButtonDown(sf::Mouse::Button button) const
+{
+    return sf::Mouse::isButtonPressed(button);
+}
