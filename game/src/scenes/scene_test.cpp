@@ -11,8 +11,9 @@
 #include <map>
 #include <fstream>
 
-SceneTest::SceneTest(const Game *game) : Scene(game)
+SceneTest::SceneTest(Game *game, const char* levelPath) : Scene(game)
 {
+    LoadLevel(levelPath);
 }
 
 void SceneTest::OnSceneEnter()
@@ -30,7 +31,6 @@ void SceneTest::OnSceneEnter()
 
     NT_INFO("Entering test scene.");
 
-    LoadLevel("assets/levels/level_1.json");
     SpawnPlayer();
 }
 

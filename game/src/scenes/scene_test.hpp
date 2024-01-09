@@ -26,7 +26,7 @@ struct CameraParams
 
 class SceneTest : public Scene {
     public:
-        SceneTest(const Game* game);
+        SceneTest(Game* game, const char* levelPath);
         ~SceneTest() = default;
 
         void OnSceneEnter() override;
