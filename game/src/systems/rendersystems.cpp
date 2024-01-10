@@ -34,6 +34,40 @@ namespace Systems {
         }
     }
 
+    void RenderButtons(sf::RenderWindow* window, World& world, sf::View& camera, CameraParams& cameraParams)
+    {
+        window->setView(camera);
+
+        auto buttons = world.GetEntitiesWithTag("button");
+
+        for (auto e : buttons)
+        {
+            auto& button = e->GetComponent<CButton>();
+
+            // Draw button sprite.
+
+            auto& coll = e->GetComponent<CBoxCollider>();
+            auto& tf = e->GetComponent<CTransform>();
+
+            Vec2 pos = tf.Position;
+            pos.y += coll.Size.y / 2.0f;
+
+            // Center text on this position
+
+            sf::Vector2f textSize = button.TextSprite.getLocalBounds().getSize();
+            button.TextSprite.setOrigin(textSize.x / 2.0f, coll.Size.y / 2.0f);
+
+            f32 rot = tf.Rotation;
+            Vec2 scale = tf.Scale;
+
+            button.TextSprite.setPosition((i32)pos.x, (i32)cameraParams.FrameHeight - (i32)pos.y);
+            button.TextSprite.setRotation(rot);
+            button.TextSprite.setScale(scale.x, scale.y);
+
+            window->draw(button.TextSprite);
+        }
+    }
+
     void RenderBackground(sf::RenderWindow* window)
     {
         window->setView(window->getDefaultView());

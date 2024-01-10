@@ -17,14 +17,24 @@ void SceneMenu::AddTestButtons()
     {    
         auto& coll = e->AddComponent<CBoxCollider>(Vec2{256, 64});
         auto& tf = e->AddComponent<CTransform>(Vec2{0, 64}, Vec2{1, 1}, 0.0f);
-        auto& button = e->AddComponent<CButton>();
+        auto& button = e->AddComponent<CButton>(
+            "Level 1",
+            ResourceManager::GetInstance().GetFont("font_rubik"),
+            48,
+            sf::Color::Black
+        );
 
-        button.OnHoverEnter = [this]() { NT_INFO("Hovering over button."); };
-        button.OnHoverExit = [this]() { NT_INFO("No longer hovering over button."); };
-        button.OnRelease = [this]() { NT_INFO("Released button."); };
+        button.OnHoverEnter = [e]() { 
+            auto& button = e->GetComponent<CButton>();
+            button.TextSprite.setFillColor(sf::Color::Red);
+        };
+
+        button.OnHoverExit = [e]() { 
+            auto& button = e->GetComponent<CButton>();
+            button.TextSprite.setFillColor(sf::Color::Black);
+        };
 
         button.OnPress = [this]() {
-            NT_INFO("Changing to Level 1.");
             m_Game->ChangeScene("Level_1", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_1.json"));
         };
     }
@@ -33,11 +43,22 @@ void SceneMenu::AddTestButtons()
     {
         auto& coll = e2->AddComponent<CBoxCollider>(Vec2{256, 64});
         auto& tf = e2->AddComponent<CTransform>(Vec2{0, 0}, Vec2{1, 1}, 0.0f);
-        auto& button = e2->AddComponent<CButton>();
+        auto& button = e2->AddComponent<CButton>(
+            "Level 2",
+            ResourceManager::GetInstance().GetFont("font_rubik"),
+            48,
+            sf::Color::Black
+        );
 
-        button.OnHoverEnter = [this]() { NT_INFO("Hovering over button."); };
-        button.OnHoverExit = [this]() { NT_INFO("No longer hovering over button."); };
-        button.OnRelease = [this]() { NT_INFO("Released button."); };
+        button.OnHoverEnter = [e2]() { 
+            auto& button = e2->GetComponent<CButton>();
+            button.TextSprite.setFillColor(sf::Color::Red);
+        };
+
+        button.OnHoverExit = [e2]() { 
+            auto& button = e2->GetComponent<CButton>();
+            button.TextSprite.setFillColor(sf::Color::Black);
+        };
 
         button.OnPress = [this]() {
             NT_INFO("Changing to Level 2.");
@@ -196,6 +217,11 @@ void SceneMenu::Render(sf::RenderWindow *window)
         Systems::RenderSprites(window, m_World, m_Camera, m_CameraParams);
     }
 
+    if (m_SystemToggles.RenderButtons)
+    {
+        Systems::RenderButtons(window, m_World, m_Camera, m_CameraParams);
+    }
+
     if (m_SystemToggles.DebugRenderColliders)
     {
         Systems::DebugRenderColliders(window, m_World, m_Camera, m_CameraParams);
@@ -268,6 +294,7 @@ void SceneMenu::DrawGUI()
 
             ImGui::Checkbox("RenderBackground", &m_SystemToggles.RenderBackground);
             ImGui::Checkbox("RenderSprites", &m_SystemToggles.RenderSprites);
+            ImGui::Checkbox("RenderButtons", &m_SystemToggles.RenderButtons);
 
             ImGui::SeparatorText("Debug");
 

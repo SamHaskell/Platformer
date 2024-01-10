@@ -71,6 +71,11 @@
             "type" : "font",
             "name" : "font_noto",
             "path" : "assets/fonts/noto/static/NotoSans-Medium.ttf"
+        },
+        {
+            "type" : "font",
+            "name" : "font_rubik",
+            "path" : "assets/fonts/rubik/RubikDoodleShadow-Regular.ttf"
         }
     ]
 }

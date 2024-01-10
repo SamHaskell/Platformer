@@ -26,6 +26,7 @@ class SceneMenu : public Scene {
             bool PhysicsCheckButtons = true;
             bool RenderBackground = true;
             bool RenderSprites = true;
+            bool RenderButtons = true;
             bool DebugRenderWorldGrid = true;
             bool DebugRenderColliders = true;
         } 

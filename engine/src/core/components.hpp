@@ -143,6 +143,8 @@ struct CBoxCollider : Component
 
 struct CButton : Component
 {
+    sf::Text TextSprite;
+
     bool IsDown = false;
     bool IsHovering = false;
 
@@ -152,6 +154,14 @@ struct CButton : Component
     std::function<void()> OnHoverExit = [](){};
 
     CButton() = default;
-    CButton(std::function<void()> onPress, std::function<void()> onRelease, std::function<void()> onHoverEnter, std::function<void()> onHoverExit) : 
-        OnPress(onPress), OnRelease(onRelease), OnHoverEnter(onHoverEnter), OnHoverExit(onHoverExit) {};
+    CButton(const std::string& text,
+            sf::Font& font,
+            f32 fontSize,
+            sf::Color fontColor    
+        )
+    {
+        TextSprite = sf::Text(text, font, fontSize);
+        TextSprite.setFillColor(fontColor);
+        TextSprite.setOutlineColor(fontColor);
+    }
 };
