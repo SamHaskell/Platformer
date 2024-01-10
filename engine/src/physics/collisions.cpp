@@ -55,7 +55,7 @@ bool Physics2D::Raycast(Ray ray, AABB target, RaycastHit& outHit, f32 maxDistanc
     f32 tHitNear = std::max(tNear.x, tNear.y);
     f32 tHitFar = std::min(tFar.x, tFar.y);
 
-    if (tHitFar < 0.f) { return false; }
+    if (tHitNear < 0.f) { return false; }
 
     outHit.Point = ray.Origin + ray.Direction * tHitNear;
     outHit.Distance = tHitNear;
