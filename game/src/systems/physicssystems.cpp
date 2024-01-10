@@ -99,7 +99,6 @@ namespace Systems {
                         playerVelocity.Velocity -= second_hit.Normal * Vec2::Dot(second_hit.Normal, playerVelocity.Velocity) * distLeft;
                     }
 
-
                     if (second_hit.Normal.y > 0.0f)
                     {
                         player->GetComponent<CPlayerController>().IsGrounded = true;

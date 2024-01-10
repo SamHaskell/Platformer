@@ -13,7 +13,7 @@ class SceneMenu : public Scene {
         void OnAction(Action action) override;
         void Update(f64 dt) override;
         void Render(sf::RenderWindow* window) override;
-        void DrawGUI() override;
+        void OnDrawGUI() override;
 
     private:
         void PhysicsCheckButtons(World& world, f64 dt);
@@ -27,10 +27,8 @@ class SceneMenu : public Scene {
             bool RenderBackground = true;
             bool RenderSprites = true;
             bool RenderButtons = true;
-            bool DebugRenderWorldGrid = false;
-            bool DebugRenderColliders = false;
+            bool DebugRenderWorldGrid = true;
+            bool DebugRenderColliders = true;
         } 
         m_SystemToggles;
-
-        bool m_ShowDebugOverlay = false;
 };

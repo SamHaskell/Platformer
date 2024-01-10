@@ -22,7 +22,7 @@ class ScenePlay : public Scene {
         void OnAction(Action action) override;
         void Update(f64 dt) override;
         void Render(sf::RenderWindow* window) override;
-        void DrawGUI() override;
+        void OnDrawGUI() override;
 
     private:
         void DebugRenderWorldGrid(sf::RenderWindow* window);
@@ -43,13 +43,12 @@ class ScenePlay : public Scene {
             bool PhysicsCheckCollisions = true;
             bool RenderBackground = true;
             bool RenderSprites = true;
-            bool DebugRenderWorldGrid = false;
-            bool DebugRenderColliders = false;
-            bool DebugRenderCamera = false;
+            bool DebugRenderWorldGrid = true;
+            bool DebugRenderColliders = true;
+            bool DebugRenderCamera = true;
         } 
         m_SystemToggles;
 
-        bool m_ShowDebugOverlay = false;
         std::map<std::string, TileData> m_TileData;
         std::shared_ptr<Entity> m_Player;
 };

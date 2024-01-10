@@ -13,14 +13,12 @@ SceneSandbox::SceneSandbox(Game *game) : Scene(game)
 
 void SceneSandbox::OnSceneEnter()
 {
-    // Register actions.
-
     RegisterAction(sf::Keyboard::Up, "Up");
     RegisterAction(sf::Keyboard::Left, "Left");
     RegisterAction(sf::Keyboard::Right, "Right");
     RegisterAction(sf::Keyboard::Down, "Down");
     RegisterAction(sf::Keyboard::Escape, "MainMenu");
-    RegisterAction(sf::Keyboard::F1, "ToggleDebugOverlay");
+    RegisterAction(sf::Keyboard::F1, "ToggleDebugTools");
 }
 
 void SceneSandbox::OnSceneExit()
@@ -48,9 +46,9 @@ void SceneSandbox::OnAction(Action action)
     {
         playerActions.Down = (action.Type == ActionType::Begin);
     }
-    else if (action.Name == "ToggleDebugOverlay" && action.Type == ActionType::Begin)
+    else if (action.Name == "ToggleDebugTools" && action.Type == ActionType::Begin)
     {
-        m_ShowDebugOverlay = !m_ShowDebugOverlay;
+        m_ShowDebugTools = !m_ShowDebugTools;
     }
     else if (action.Name == "MainMenu" && action.Type == ActionType::Begin)
     {
@@ -79,32 +77,8 @@ void SceneSandbox::Render(sf::RenderWindow *window)
 
 }
 
-void SceneSandbox::DrawGUI()
+void SceneSandbox::OnDrawGUI()
 {
-    if (!m_ShowDebugOverlay)
-    {
-        return;
-    }
-
-    ImGuiIO &io = ImGui::GetIO();
-    ImVec2 mousePos = io.MousePos;
-    f32 deltaTime = io.DeltaTime;
-
-    static bool useOverlay = false;
-
-    if (useOverlay)
-    {
-        ImGui::Begin("Overlay Panel", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
-        ImGui::SetWindowPos(ImVec2(10, 10));
-        ImGui::SetWindowSize(ImVec2(250, 50));
-
-        ImGui::Text("Mouse Position: (%.1f, %.1f)", mousePos.x, mousePos.y);
-        ImGui::Text("Frame Time: %.3f (ms)", deltaTime * 1000.0f);
-        ImGui::PopStyleVar();
-        ImGui::End();
-    }
-
     if (!ImGui::Begin("Debug"))
     {
         ImGui::End();
@@ -132,7 +106,7 @@ void SceneSandbox::DrawGUI()
         }
         if (ImGui::BeginTabItem("Settings"))
         {
-            ImGui::Checkbox("Debug Overlay", &useOverlay);
+            ImGui::Checkbox("Debug Overlay", &m_ShowDebugOverlay);
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();

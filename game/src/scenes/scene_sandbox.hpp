@@ -12,9 +12,8 @@ class SceneSandbox : public Scene {
         void OnAction(Action action) override;
         void Update(f64 dt) override;
         void Render(sf::RenderWindow* window) override;
-        void DrawGUI() override;
+        void OnDrawGUI() override;
 
     private:
         std::shared_ptr<Entity> m_Player;
-        bool m_ShowDebugOverlay = false;
 };
