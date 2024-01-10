@@ -1,5 +1,6 @@
 #include "scene_menu.hpp"
 #include "scene_play.hpp"
+#include "scene_sandbox.hpp"
 
 #include "../systems/debugsystems.hpp"
 #include "../systems/rendersystems.hpp"
@@ -13,8 +14,8 @@
 
 void SceneMenu::AddTestButtons()
 {
-    auto e = m_World.AddEntity("button");
     {    
+        auto e = m_World.AddEntity("button");
         auto& coll = e->AddComponent<CBoxCollider>(Vec2{256, 64});
         auto& tf = e->AddComponent<CTransform>(Vec2{0, 64}, Vec2{1, 1}, 0.0f);
         auto& button = e->AddComponent<CButton>(
@@ -39,30 +40,84 @@ void SceneMenu::AddTestButtons()
         };
     }
 
-    auto e2 = m_World.AddEntity("button");
     {
-        auto& coll = e2->AddComponent<CBoxCollider>(Vec2{256, 64});
-        auto& tf = e2->AddComponent<CTransform>(Vec2{0, 0}, Vec2{1, 1}, 0.0f);
-        auto& button = e2->AddComponent<CButton>(
+        auto e = m_World.AddEntity("button");
+        auto& coll = e->AddComponent<CBoxCollider>(Vec2{256, 64});
+        auto& tf = e->AddComponent<CTransform>(Vec2{0, -32}, Vec2{1, 1}, 0.0f);
+        auto& button = e->AddComponent<CButton>(
             "Level 2",
             ResourceManager::GetInstance().GetFont("font_rubik"),
             48,
             sf::Color::Black
         );
 
-        button.OnHoverEnter = [e2]() { 
-            auto& button = e2->GetComponent<CButton>();
+        button.OnHoverEnter = [e]() { 
+            auto& button = e->GetComponent<CButton>();
             button.TextSprite.setFillColor(sf::Color::Red);
         };
 
-        button.OnHoverExit = [e2]() { 
-            auto& button = e2->GetComponent<CButton>();
+        button.OnHoverExit = [e]() { 
+            auto& button = e->GetComponent<CButton>();
             button.TextSprite.setFillColor(sf::Color::Black);
         };
 
         button.OnPress = [this]() {
             NT_INFO("Changing to Level 2.");
             m_Game->ChangeScene("Level_2", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_2.json"));
+        };
+    }
+
+    {
+        auto e = m_World.AddEntity("button");
+        auto& coll = e->AddComponent<CBoxCollider>(Vec2{256, 64});
+        auto& tf = e->AddComponent<CTransform>(Vec2{0, -128}, Vec2{1, 1}, 0.0f);
+        auto& button = e->AddComponent<CButton>(
+            "Level 3",
+            ResourceManager::GetInstance().GetFont("font_rubik"),
+            48,
+            sf::Color::Black
+        );
+
+        button.OnHoverEnter = [e]() { 
+            auto& button = e->GetComponent<CButton>();
+            button.TextSprite.setFillColor(sf::Color::Red);
+        };
+
+        button.OnHoverExit = [e]() { 
+            auto& button = e->GetComponent<CButton>();
+            button.TextSprite.setFillColor(sf::Color::Black);
+        };
+
+        button.OnPress = [this]() {
+            NT_INFO("Changing to Level 3.");
+            m_Game->ChangeScene("Level_3", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_3.json"));
+        };
+    }
+
+    {
+        auto e = m_World.AddEntity("button");
+        auto& coll = e->AddComponent<CBoxCollider>(Vec2{256, 64});
+        auto& tf = e->AddComponent<CTransform>(Vec2{0, -224}, Vec2{1, 1}, 0.0f);
+        auto& button = e->AddComponent<CButton>(
+            "Sandbox",
+            ResourceManager::GetInstance().GetFont("font_rubik"),
+            48,
+            sf::Color::Black
+        );
+
+        button.OnHoverEnter = [e]() { 
+            auto& button = e->GetComponent<CButton>();
+            button.TextSprite.setFillColor(sf::Color::Red);
+        };
+
+        button.OnHoverExit = [e]() { 
+            auto& button = e->GetComponent<CButton>();
+            button.TextSprite.setFillColor(sf::Color::Black);
+        };
+
+        button.OnPress = [this]() {
+            NT_INFO("Changing to Sandbox.");
+            m_Game->ChangeScene("Sandbox", std::make_shared<SceneSandbox>(m_Game));
         };
     }
 }
@@ -143,8 +198,6 @@ void SceneMenu::OnSceneEnter()
 
     AddTestButtons();
 
-    NT_INFO("Entering menu scene.");
-
     // Place camera at center of screen.
 
     m_CameraParams.CurrentPosition = Vec2{0, 0};
@@ -159,7 +212,7 @@ void SceneMenu::OnSceneEnter()
 
 void SceneMenu::OnSceneExit()
 {
-    NT_INFO("Exiting test scene.");
+
 }
 
 void SceneMenu::OnAction(Action action)
@@ -187,7 +240,7 @@ void SceneMenu::OnAction(Action action)
     }
     else if (action.Name == "ToggleDebugOverlay" && action.Type == ActionType::Begin)
     {
-
+        m_ShowDebugOverlay = !m_ShowDebugOverlay;
     }
     else if (action.Name == "LeftClick")
     {

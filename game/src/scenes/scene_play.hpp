@@ -43,13 +43,13 @@ class ScenePlay : public Scene {
             bool PhysicsCheckCollisions = true;
             bool RenderBackground = true;
             bool RenderSprites = true;
-            bool DebugRenderWorldGrid = true;
-            bool DebugRenderColliders = true;
-            bool DebugRenderCamera = true;
+            bool DebugRenderWorldGrid = false;
+            bool DebugRenderColliders = false;
+            bool DebugRenderCamera = false;
         } 
         m_SystemToggles;
 
-        bool m_ShowDebugOverlay = true;
+        bool m_ShowDebugOverlay = false;
         std::map<std::string, TileData> m_TileData;
         std::shared_ptr<Entity> m_Player;
 };

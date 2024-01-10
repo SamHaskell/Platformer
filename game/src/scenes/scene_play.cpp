@@ -1,4 +1,5 @@
 #include "scene_play.hpp"
+#include "scene_menu.hpp"
 
 #include "../systems/debugsystems.hpp"
 #include "../systems/rendersystems.hpp"
@@ -31,16 +32,24 @@ void ScenePlay::OnSceneEnter()
     RegisterAction(sf::Keyboard::Right, "Right");
     RegisterAction(sf::Keyboard::Down, "Down");
     RegisterAction(sf::Keyboard::Space, "Jump");
+    RegisterAction(sf::Keyboard::Escape, "MainMenu");
     RegisterAction(sf::Keyboard::F1, "ToggleDebugOverlay");
 
-    NT_INFO("Entering test scene.");
-
     SpawnPlayer();
+
+    m_CameraParams.CurrentPosition = m_Player->GetComponent<CTransform>().Position;
+
+    m_Camera.setSize(m_CameraParams.FrameWidth, m_CameraParams.FrameHeight);
+
+    m_Camera.setCenter(
+        (i32) m_CameraParams.CurrentPosition.x, 
+        (i32)(m_CameraParams.FrameHeight - m_CameraParams.CurrentPosition.y)
+    );
 }
 
 void ScenePlay::OnSceneExit()
 {
-    NT_INFO("Exiting test scene.");
+
 }
 
 void ScenePlay::OnAction(Action action)
@@ -70,6 +79,10 @@ void ScenePlay::OnAction(Action action)
     else if (action.Name == "ToggleDebugOverlay" && action.Type == ActionType::Begin)
     {
         m_ShowDebugOverlay = !m_ShowDebugOverlay;
+    }
+    else if (action.Name == "MainMenu" && action.Type == ActionType::Begin)
+    {
+        m_Game->ChangeScene("MainMenu", std::make_shared<SceneMenu>(m_Game));
     }
     else if (action.Name == "LeftClick")
     {
@@ -275,7 +288,7 @@ void ScenePlay::SpawnPlayer()
     m_Player = m_World.AddEntity("player");
 
     m_Player->AddComponent<CTransform>(
-        Vec2{16, 1280},
+        Vec2{16, 64},
         Vec2{2, 2},
         0.0f);
 

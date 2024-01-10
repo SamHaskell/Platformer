@@ -27,10 +27,10 @@ class SceneMenu : public Scene {
             bool RenderBackground = true;
             bool RenderSprites = true;
             bool RenderButtons = true;
-            bool DebugRenderWorldGrid = true;
-            bool DebugRenderColliders = true;
+            bool DebugRenderWorldGrid = false;
+            bool DebugRenderColliders = false;
         } 
         m_SystemToggles;
 
-        bool m_ShowDebugOverlay = true;
+        bool m_ShowDebugOverlay = false;
 };
