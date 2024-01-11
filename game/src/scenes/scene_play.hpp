@@ -43,9 +43,9 @@ class ScenePlay : public Scene {
             bool PhysicsCheckCollisions = true;
             bool RenderBackground = true;
             bool RenderSprites = true;
-            bool DebugRenderWorldGrid = true;
-            bool DebugRenderColliders = true;
-            bool DebugRenderCamera = true;
+            bool DebugRenderWorldGrid = false;
+            bool DebugRenderColliders = false;
+            bool DebugRenderCamera = false;
         } 
         m_SystemToggles;
 

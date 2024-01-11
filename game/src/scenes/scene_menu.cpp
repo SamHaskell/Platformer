@@ -62,7 +62,6 @@ void SceneMenu::AddTestButtons()
         };
 
         button.OnPress = [this]() {
-            NT_INFO("Changing to Level 2.");
             m_Game->ChangeScene("Level_2", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_2.json"));
         };
     }
@@ -89,7 +88,6 @@ void SceneMenu::AddTestButtons()
         };
 
         button.OnPress = [this]() {
-            NT_INFO("Changing to Level 3.");
             m_Game->ChangeScene("Level_3", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_3.json"));
         };
     }
@@ -116,7 +114,6 @@ void SceneMenu::AddTestButtons()
         };
 
         button.OnPress = [this]() {
-            NT_INFO("Changing to Sandbox.");
             m_Game->ChangeScene("Sandbox", std::make_shared<SceneSandbox>(m_Game));
         };
     }
@@ -193,7 +190,6 @@ void SceneMenu::OnSceneEnter()
     RegisterAction(sf::Keyboard::Left, "Left");
     RegisterAction(sf::Keyboard::Right, "Right");
     RegisterAction(sf::Keyboard::Down, "Down");
-    RegisterAction(sf::Keyboard::Space, "EnterPlayScene");
     RegisterAction(sf::Keyboard::F1, "ToggleDebugTools");
 
     AddTestButtons();
@@ -232,11 +228,6 @@ void SceneMenu::OnAction(Action action)
     else if (action.Name == "Down")
     {
 
-    }
-    else if (action.Name == "EnterPlayScene")
-    {
-        NT_INFO("Changing to play scene.");
-        m_Game->ChangeScene("PlayScene", std::make_shared<ScenePlay>(m_Game, "assets/levels/level_1.json"));
     }
     else if (action.Name == "ToggleDebugTools" && action.Type == ActionType::Begin)
     {

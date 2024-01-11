@@ -89,13 +89,11 @@ namespace Systems {
                     f32 dist = Vec2::Magnitude(playerVelocity.Velocity) * dt;
                     f32 distLeft = (1.0f - second_hit.Distance / dist);
 
-
                     if (second_hit.Distance < 0.0f)
                     {
                         playerTransform.Position = second_hit.Point + second_hit.Normal * 0.1f;
                         playerTransform.Position.y -= (playerCollider.Size.y * fabsf(playerTransform.Scale.y)) / 2.0f;
                     } else {
-                        NT_INFO("distLeft: %.3f", distLeft);
                         playerVelocity.Velocity -= second_hit.Normal * Vec2::Dot(second_hit.Normal, playerVelocity.Velocity) * distLeft;
                     }
 

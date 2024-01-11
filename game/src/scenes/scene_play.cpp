@@ -376,7 +376,6 @@ void ScenePlay::DebugRenderCamera(sf::RenderWindow *window)
 void ScenePlay::LoadLevel(const std::string &path)
 {
     m_World = World();
-    NT_INFO("Loading level from file: %s", path.c_str());
 
     std::ifstream file(path);
     if (!file.is_open())
