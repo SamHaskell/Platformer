@@ -13,6 +13,10 @@ I plan to write a few things about the development of this project and my design
 
 ![A screenshot of the game, with debug overlay shown](./res/game.png)
 
+You can check out a demo showcasing the current status of the project by clicking the image below!
+
+[![A video showing some of the engine functionality of the game](https://img.youtube.com/vi/P-MXMrSFqmk/0.jpg)](https://www.youtube.com/watch?v=P-MXMrSFqmk)
+
 ## Features
 
 * Engine
