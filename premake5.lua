@@ -63,7 +63,7 @@ workspace "SFML Project"
         files 
         { 
             "game/src/**.cpp",
-            "game/src/**.hpp" 
+            "game/src/**.hpp"
         }
         
         links 
@@ -78,6 +78,7 @@ workspace "SFML Project"
         
         includedirs 
         { 
+            "game/src",
             "engine/src",
             "engine/vendor/imgui",
             "engine/vendor/imgui-sfml",

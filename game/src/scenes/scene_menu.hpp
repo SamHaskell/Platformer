@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common.hpp"
 #include "core/scene.hpp"
 #include "core/entity.hpp"
 

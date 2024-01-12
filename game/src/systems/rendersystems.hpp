@@ -1,16 +1,7 @@
 #pragma once
 
+#include "common.hpp"
 #include "core/scene.hpp"
-
-struct TileData
-{
-    std::string Name;
-    std::string TextureSource;
-    u32 Width;
-    u32 Height;
-    i32 OffsetX;
-    i32 OffsetY;
-};
 
 namespace Systems {
     void RenderSprites(sf::RenderWindow* window, World& world, sf::View& camera, CameraParams& cameraParams);

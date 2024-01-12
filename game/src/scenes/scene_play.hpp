@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common.hpp"
 #include "core/scene.hpp"
 #include "core/entity.hpp"
 
@@ -7,6 +8,8 @@
 #include "../systems/rendersystems.hpp"
 #include "../systems/updatesystems.hpp"
 #include "../systems/physicssystems.hpp"
+
+
 
 class ScenePlay : public Scene {
     public:
@@ -21,6 +24,9 @@ class ScenePlay : public Scene {
         void OnDrawGUI() override;
 
     private:
+        Vec2 GridToWorld(const Vec2& position);
+        Vec2 WorldToGrid(const Vec2& position);
+
         void DebugRenderWorldGrid(sf::RenderWindow* window);
         void DebugRenderCamera(sf::RenderWindow* window);
         
@@ -30,6 +36,9 @@ class ScenePlay : public Scene {
         void LoadLevel(const std::string& path);
 
     private:
+
+        // Debug
+
         struct SystemToggles
         {
             bool UpdateGravity = true;
@@ -47,12 +56,18 @@ class ScenePlay : public Scene {
         } 
         m_SystemToggles;
 
+        // Editor
+
         std::string m_LevelPath;
         char m_LevelSerializationPath[1024];
 
         bool m_PaintTiles;
         TileData m_CurrentSelectedTile;
         sf::Sprite m_CurrentSelectedTileSprite;
+
+        // Runtime
+
+        Grid m_WorldGrid = {32, 32};
 
         std::map<std::string, TileData> m_TileData;
         std::shared_ptr<Entity> m_Player;

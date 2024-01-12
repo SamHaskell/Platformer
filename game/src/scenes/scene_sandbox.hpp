@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common.hpp"
 #include "core/scene.hpp"
 
 class SceneSandbox : public Scene {

@@ -332,6 +332,22 @@ void ScenePlay::SpawnPlayer()
     m_Player->AddComponent<CPlayerController>(400.0f, 800.0f);
 }
 
+Vec2 ScenePlay::GridToWorld(const Vec2& position)
+{
+    return Vec2{
+        position.x * 32.0f,
+        position.y * 32.0f
+    };
+}
+
+Vec2 ScenePlay::WorldToGrid(const Vec2& position)
+{
+    return Vec2{
+        (f32)std::floor(position.x / 32.0f),
+        (f32)std::floor(position.y / 32.0f)
+    };
+}
+
 void ScenePlay::DebugRenderWorldGrid(sf::RenderWindow *window)
 {
     window->setView(window->getDefaultView());
