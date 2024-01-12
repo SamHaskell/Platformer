@@ -34,7 +34,7 @@ void SceneMenu::AddTestButtons() {
         button.OnPress = [this]() {
             m_Game->ChangeScene("Level_1",
                                 std::make_shared<ScenePlay>(
-                                    m_Game, "assets/levels/level_1.json"));
+                                    m_Game, "assets/levels/level_1.level"));
         };
     }
 
@@ -59,7 +59,7 @@ void SceneMenu::AddTestButtons() {
         button.OnPress = [this]() {
             m_Game->ChangeScene("Level_2",
                                 std::make_shared<ScenePlay>(
-                                    m_Game, "assets/levels/level_2.json"));
+                                    m_Game, "assets/levels/level_2.level"));
         };
     }
 
@@ -84,7 +84,7 @@ void SceneMenu::AddTestButtons() {
         button.OnPress = [this]() {
             m_Game->ChangeScene("Level_3",
                                 std::make_shared<ScenePlay>(
-                                    m_Game, "assets/levels/level_3.json"));
+                                    m_Game, "assets/levels/level_3.level"));
         };
     }
 

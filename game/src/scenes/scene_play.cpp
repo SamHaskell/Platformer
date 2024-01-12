@@ -1,9 +1,12 @@
 #include "scene_play.hpp"
 #include "scene_menu.hpp"
 
+#include "gui.hpp"
+
 #include "core/game.hpp"
 #include "core/resources.hpp"
 #include "core/scene.hpp"
+
 #include "maths/maths.hpp"
 #include "physics/collisions.hpp"
 
@@ -31,9 +34,12 @@ void ScenePlay::OnSceneEnter() {
 
     LoadLevel(m_LevelPath);
 
-    for (auto &entry : std::filesystem::directory_iterator("assets/levels")) {
+    for (auto &entry : std::filesystem::recursive_directory_iterator("assets")) {
+        if (entry.path().extension() != ".level") {
+            continue;
+        }
+
         m_LevelPaths.push_back(entry.path().string());
-        NT_INFO("Found level: %s", entry.path().string().c_str());
     }
 }
 
@@ -182,28 +188,10 @@ void ScenePlay::OnDrawGUI() {
                 LoadLevel(m_LevelPath);
             }
 
-            ImGui::Separator();
-
-            ImGui::PushID("test");
-            if (ImGui::Combo(
-                    "", &m_CurrentLevelIndex,
-                    [](void *data, int idx, const char **out_text) {
-                        auto &levelPaths =
-                            *static_cast<std::vector<std::string> *>(data);
-                        if (idx >= levelPaths.size() || idx < 0)
-                            return false;
-                        *out_text = levelPaths[idx].c_str();
-                        return true;
-                    },
-                    static_cast<void*>(&m_LevelPaths), m_LevelPaths.size())) {
-            }
-            ImGui::PopID();
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Load")) {
-                LoadLevel(m_LevelPaths[m_CurrentLevelIndex]);
-            }
+            GUI::DrawLevelSelector(m_CurrentLevelIndex, m_LevelPaths,
+                                   [&](const std::string &path) {
+                                       LoadLevel(path);
+                                   });
 
             ImGui::EndTabItem();
         }
