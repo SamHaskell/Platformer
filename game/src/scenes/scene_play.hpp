@@ -24,12 +24,6 @@ class ScenePlay : public Scene {
         void OnDrawGUI() override;
 
     private:
-        Vec2 GridToWorld(const Vec2& position);
-        Vec2 WorldToGrid(const Vec2& position);
-
-        void DebugRenderWorldGrid(sf::RenderWindow* window);
-        void DebugRenderCamera(sf::RenderWindow* window);
-        
         void SpawnPlayer();
 
         void SerializeLevel(const std::string& path);

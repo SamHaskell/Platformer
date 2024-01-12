@@ -26,6 +26,7 @@ class Game {
 
         Vec2 GetWindowSize() const;
         Vec2 GetMousePosition() const;
+        inline sf::RenderWindow* GetWindow() { return m_Window; }
 
         bool IsMouseButtonDown(sf::Mouse::Button button) const;
 

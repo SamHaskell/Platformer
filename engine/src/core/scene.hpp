@@ -36,9 +36,6 @@ class Scene {
         virtual void Render(sf::RenderWindow* window) = 0;
         
     protected:
-        Vec2 ScreenToWorld(Vec2 screenPos);
-        Vec2 WorldToScreen(Vec2 worldPos);
-
         Game* m_Game;
         World m_World;
         sf::View m_Camera;

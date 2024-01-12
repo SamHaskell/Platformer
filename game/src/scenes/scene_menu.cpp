@@ -128,7 +128,7 @@ void SceneMenu::PhysicsCheckButtons(World &world, f64 dt) {
                           coll.Size.x, coll.Size.y};
 
         Vec2 mousePos = m_Game->GetMousePosition();
-        Vec2 mouseWorldPos = ScreenToWorld(mousePos);
+        Vec2 mouseWorldPos = ScreenToWorld(mousePos, m_Camera, *m_Game->GetWindow());
 
         bool leftClick = m_Game->IsMouseButtonDown(sf::Mouse::Left);
 
