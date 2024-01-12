@@ -7,163 +7,163 @@
             "y": 1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "grass",
             "x": -1.0,
             "y": 1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "grass",
             "x": -2.0,
             "y": 1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "grass-left",
             "x": -3.0,
             "y": 1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "grass-right",
             "x": 3.0,
             "y": 1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt-right",
             "x": 3.0,
             "y": 0.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt-left",
             "x": -3.0,
             "y": 0.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "grass",
             "x": 2.0,
             "y": 1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": 2.0,
             "y": 0.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": 1.0,
             "y": 0.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": -1.0,
             "y": 0.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": -2.0,
             "y": 0.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt-left",
             "x": -3.0,
             "y": -1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt-left",
             "x": -3.0,
             "y": -2.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt-right",
             "x": 3.0,
             "y": -1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt-right",
             "x": 3.0,
             "y": -2.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": 2.0,
             "y": -1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": 1.0,
             "y": -1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": -1.0,
             "y": -1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": -2.0,
             "y": -1.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": -2.0,
             "y": -2.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": -1.0,
             "y": -2.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -2.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": 1.0,
             "y": -2.0
         },
         {
-            "collides": false,
+            "collides": true,
             "type": "dirt",
             "x": 2.0,
             "y": -2.0

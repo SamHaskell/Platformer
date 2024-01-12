@@ -39,11 +39,7 @@ void ScenePlay::OnSceneEnter()
 
     for (auto& entry : std::filesystem::recursive_directory_iterator("assets")) 
     {
-        if (entry.path().extension() != ".level") 
-        {
-            continue;
-        }
-
+        if (entry.path().extension() != ".level") {continue;}
         m_LevelPaths.push_back(entry.path().string());
     }
 }
@@ -88,20 +84,16 @@ void ScenePlay::OnAction(Action action)
         {
             if (m_EraseTiles) 
             {
-                Vec2 mousePosGrid = m_WorldGrid.GridFromWorld(ScreenToWorld(
-                    { (f32)action.Position.x, (f32)action.Position.y }, m_Camera,
-                    *m_Game->GetWindow()));
-
-                NT_INFO("Mouse Pos Grid: %f, %f", mousePosGrid.x,
-                    mousePosGrid.y);
+                Vec2 mousePosGrid = m_WorldGrid.GridFromWorld(
+                    ScreenToWorld(action.Position, m_Camera, *m_Game->GetWindow())
+                );
 
                 for (auto e : m_World.GetEntitiesWithTag("tile")) 
                 {
                     if (e->HasComponent<CTransform>()) 
                     {
                         Vec2 tilePosGrid = m_WorldGrid.GridFromWorld(e->GetComponent<CTransform>().Position);
-                        NT_INFO("Tile Pos Grid: %f, %f", tilePosGrid.x,
-                            tilePosGrid.y);
+                        
                         if (tilePosGrid == mousePosGrid) 
                         {
                             e->Destroy();
@@ -112,34 +104,44 @@ void ScenePlay::OnAction(Action action)
 
             if (m_PaintTiles) 
             {
-                Vec2 mousePos = m_WorldGrid.AlignToGrid(ScreenToWorld(
-                    { (f32)action.Position.x, (f32)action.Position.y }, m_Camera,
-                    *m_Game->GetWindow()));
+                Vec2 mousePos = m_WorldGrid.AlignToGrid(
+                    ScreenToWorld(action.Position, m_Camera, *m_Game->GetWindow())
+                );
 
                 mousePos.x += 16.0f;
 
                 auto e = m_World.AddEntity("tile");
 
                 e->AddComponent<CTransform>(mousePos, Vec2 { 2.0f, 2.0f }, 0.0f);
-                e->AddComponent<CSprite>(
-                    ResourceManager::GetInstance().GetTexture(
-                        m_CurrentSelectedTile.TextureSource),
-                    m_CurrentSelectedTile.OffsetX,
-                    m_CurrentSelectedTile.OffsetY, m_CurrentSelectedTile.Width,
-                    m_CurrentSelectedTile.Height, 1.0f);
 
-                e->AddComponent<CTile>(m_CurrentSelectedTile.Name,
+                e->AddComponent<CSprite>(
+                    ResourceManager::GetInstance().GetTexture(m_CurrentSelectedTile.TextureSource),
+                    m_CurrentSelectedTile.OffsetX,
+                    m_CurrentSelectedTile.OffsetY, 
+                    m_CurrentSelectedTile.Width,
+                    m_CurrentSelectedTile.Height, 
+                    1.0f
+                );
+
+                e->AddComponent<CTile>(
+                    m_CurrentSelectedTile.Name,
                     m_CurrentSelectedTile.TextureSource,
                     m_CurrentSelectedTile.Width,
                     m_CurrentSelectedTile.Height,
                     m_CurrentSelectedTile.OffsetX,
-                    m_CurrentSelectedTile.OffsetY);
+                    m_CurrentSelectedTile.OffsetY,
+                    m_PaintColliders
+                );
 
                 if (m_PaintColliders) 
                 {
                     e->AddComponent<CBoxCollider>(
-                        Vec2 { (f32)m_CurrentSelectedTile.Width,
-                            (f32)m_CurrentSelectedTile.Height });
+                        Vec2 
+                        { 
+                            (f32)m_CurrentSelectedTile.Width, 
+                            (f32)m_CurrentSelectedTile.Height 
+                        }
+                    );
                 }
             }
         } 
@@ -224,9 +226,14 @@ void ScenePlay::Render(sf::RenderWindow* window)
     if (m_PaintTiles) 
     {
         Systems::EditorRenderSelectedTileSprite(
-            window, m_World, m_Camera, m_CameraParams, m_CurrentSelectedTile,
+            window, 
+            m_World, 
+            m_Camera, 
+            m_CameraParams, 
+            m_CurrentSelectedTile,
             m_CurrentSelectedTileSprite,
-            ScreenToWorld(m_Game->GetMousePosition(), m_Camera, *window));
+            ScreenToWorld(m_Game->GetMousePosition(), m_Camera, *window)
+        );
     }
 }
 
@@ -244,8 +251,11 @@ void ScenePlay::OnDrawGUI()
         {
             ImGui::Separator();
 
-            ImGui::InputText("Level Path", m_LevelSerializationPath,
-                IM_ARRAYSIZE(m_LevelSerializationPath));
+            ImGui::InputText(
+                "Level Path", 
+                m_LevelSerializationPath, 
+                IM_ARRAYSIZE(m_LevelSerializationPath)
+            );
 
             if (ImGui::Button("Save Level")) 
             {
@@ -260,11 +270,14 @@ void ScenePlay::OnDrawGUI()
             }
 
             GUI::DrawLevelSelector(
-                m_CurrentLevelIndex, m_LevelPaths,
-                [&](const std::string& path) { LoadLevel(path); });
+                m_CurrentLevelIndex, 
+                m_LevelPaths,
+                [&](const std::string& path) { LoadLevel(path); }
+            );
 
             ImGui::EndTabItem();
         }
+
         if (ImGui::BeginTabItem("Entities")) 
         {
             ImGui::Separator();
@@ -282,48 +295,45 @@ void ScenePlay::OnDrawGUI()
 
             ImGui::EndTabItem();
         }
+
         if (ImGui::BeginTabItem("Systems")) 
         {
             ImGui::SeparatorText("OnUpdate");
 
             ImGui::Checkbox("Update Gravity", &m_SystemToggles.UpdateGravity);
-            ImGui::Checkbox("Update Positions",
-                &m_SystemToggles.UpdatePositions);
-            ImGui::Checkbox("Update Player Movement",
-                &m_SystemToggles.UpdatePlayerMovement);
-            ImGui::Checkbox("Update Player Animation State",
-                &m_SystemToggles.UpdatePlayerAnimationState);
-            ImGui::Checkbox("Update Animations",
-                &m_SystemToggles.UpdateAnimations);
+            ImGui::Checkbox("Update Positions", &m_SystemToggles.UpdatePositions);
+            ImGui::Checkbox("Update Player Movement", &m_SystemToggles.UpdatePlayerMovement);
+            ImGui::Checkbox("Update Player Animation State", &m_SystemToggles.UpdatePlayerAnimationState);
+            ImGui::Checkbox("Update Animations", &m_SystemToggles.UpdateAnimations);
 
             ImGui::SeparatorText("OnPhysicsUpdate");
 
-            ImGui::Checkbox("Physics Check Collisions",
-                &m_SystemToggles.PhysicsCheckCollisions);
+            ImGui::Checkbox("Physics Check Collisions", &m_SystemToggles.PhysicsCheckCollisions);
 
             ImGui::SeparatorText("OnRender");
 
-            ImGui::Checkbox("Render Background",
-                &m_SystemToggles.RenderBackground);
+            ImGui::Checkbox("Render Background", &m_SystemToggles.RenderBackground);
             ImGui::Checkbox("Render Sprites", &m_SystemToggles.RenderSprites);
 
             ImGui::SeparatorText("Debug");
 
-            ImGui::Checkbox("Debug Render World Grid",
-                &m_SystemToggles.DebugRenderWorldGrid);
-            ImGui::Checkbox("Debug Render Colliders",
-                &m_SystemToggles.DebugRenderColliders);
-            ImGui::Checkbox("Debug Render Camera",
-                &m_SystemToggles.DebugRenderCamera);
+            ImGui::Checkbox("Debug Render World Grid", &m_SystemToggles.DebugRenderWorldGrid);
+            ImGui::Checkbox("Debug Render Colliders", &m_SystemToggles.DebugRenderColliders);
+            ImGui::Checkbox("Debug Render Camera", &m_SystemToggles.DebugRenderCamera);
 
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Tiles")) 
         {
 
-            GUI::DrawTilePainter(m_PaintTiles, m_EraseTiles, m_PaintColliders,
-                m_TileData, m_CurrentSelectedTile,
-                m_CurrentSelectedTileSprite);
+            GUI::DrawTilePainter(
+                m_PaintTiles, 
+                m_EraseTiles, 
+                m_PaintColliders,
+                m_TileData, 
+                m_CurrentSelectedTile,
+                m_CurrentSelectedTileSprite
+            );
 
             ImGui::EndTabItem();
         }
@@ -346,22 +356,30 @@ void ScenePlay::SpawnPlayer()
 
     m_Player = m_World.AddEntity("player");
 
-    m_Player->AddComponent<CTransform>(Vec2 { 16, 64 }, Vec2 { 2, 2 }, 0.0f);
+    m_Player->AddComponent<CTransform>(
+        Vec2{16, 64}, 
+        Vec2{2, 2}, 
+        0.0f
+    );
 
-    m_Player->AddComponent<CVelocity>(Vec2 { 0, 0 }, 0.0f);
+    m_Player->AddComponent<CVelocity>(Vec2{0, 0}, 0.0f);
 
     m_Player->AddComponent<CSprite>(
-        ResourceManager::GetInstance().GetTexture("tex_player"), 0, 0, 32, 32,
-        2.0f);
+        ResourceManager::GetInstance().GetTexture("tex_player"), 
+        0, 0, 
+        32, 32,
+        2.0f
+    );
 
     m_Player->AddComponent<CPlayerActions>();
 
     m_Player->AddComponent<CSpriteAnimator>(
-        ResourceManager::GetInstance().GetAnimation("anim_player_idle"));
+        ResourceManager::GetInstance().GetAnimation("anim_player_idle")
+    );
 
     m_Player->AddComponent<CGravity>(1600.0f);
 
-    m_Player->AddComponent<CBoxCollider>(Vec2 { 24, 22 });
+    m_Player->AddComponent<CBoxCollider>(Vec2{24, 22});
 
     m_Player->AddComponent<CPlayerController>(400.0f, 800.0f);
 }
@@ -399,10 +417,8 @@ void ScenePlay::SerializeLevel(const std::string& path)
                 json tile;
                 tile["collides"] = e->GetComponent<CTile>().SerializeCollider;
                 tile["type"] = e->GetComponent<CTile>().Name;
-                tile["x"] = std::floor(
-                    e->GetComponent<CTransform>().Position.x / 32.0f);
-                tile["y"] = std::floor(
-                    e->GetComponent<CTransform>().Position.y / 32.0f);
+                tile["x"] = std::floor(e->GetComponent<CTransform>().Position.x / 32.0f);
+                tile["y"] = std::floor(e->GetComponent<CTransform>().Position.y / 32.0f);
                 tiles.push_back(tile);
             }
         }
@@ -450,8 +466,14 @@ void ScenePlay::LoadLevel(const std::string& path)
             i32 offsetX = value["offset-x"];
             i32 offsetY = value["offset-y"];
 
-            m_TileData[name] = { name, textureSource, width,
-                height, offsetX, offsetY };
+            m_TileData[name] = { 
+                name, 
+                textureSource, 
+                width,
+                height, 
+                offsetX, 
+                offsetY 
+            };
         }
     }
 
@@ -468,21 +490,32 @@ void ScenePlay::LoadLevel(const std::string& path)
             position.y = (f32)value["y"] * 2.0 * tile.Height;
 
             auto e = m_World.AddEntity("tile");
-            e->AddComponent<CTransform>(position, Vec2 { 2.0f, 2.0f }, 0.0f);
+            e->AddComponent<CTransform>(
+                position, 
+                Vec2{2.0f, 2.0f}, 
+                0.0f
+            );
+            
             e->AddComponent<CSprite>(
                 ResourceManager::GetInstance().GetTexture(tile.TextureSource),
-                tile.OffsetX, tile.OffsetY, tile.Width, tile.Height, 1.0f);
+                tile.OffsetX, tile.OffsetY, 
+                tile.Width, tile.Height, 
+                1.0f
+            );
 
             bool collides = value["collides"];
 
-            e->AddComponent<CTile>(type, tile.TextureSource, tile.Width,
-                tile.Height, tile.OffsetX, tile.OffsetY,
-                collides);
+            e->AddComponent<CTile>(
+                type, 
+                tile.TextureSource, 
+                tile.Width, tile.Height, 
+                tile.OffsetX, tile.OffsetY,
+                collides
+            );
 
             if (collides) 
             {
-                e->AddComponent<CBoxCollider>(
-                    Vec2 { (f32)tile.Width, (f32)tile.Height });
+                e->AddComponent<CBoxCollider>(Vec2{(f32)tile.Width, (f32)tile.Height});
             }
         }
     }
