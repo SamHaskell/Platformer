@@ -54,6 +54,8 @@ class ScenePlay : public Scene {
         std::string m_LevelPath;
         char m_LevelSerializationPath[1024];
 
+        TileData m_CurrentSelectedTile;
+
         std::map<std::string, TileData> m_TileData;
         std::shared_ptr<Entity> m_Player;
 };

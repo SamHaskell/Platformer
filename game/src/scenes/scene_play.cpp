@@ -166,6 +166,26 @@ void ScenePlay::OnDrawGUI()
 
     if (ImGui::BeginTabBar("##TabBar"))
     {
+        if (ImGui::BeginTabItem("Level"))
+        {
+            ImGui::Separator();
+
+            ImGui::InputText("Level Path", m_LevelSerializationPath, IM_ARRAYSIZE(m_LevelSerializationPath));
+
+            if (ImGui::Button("Load Level"))
+            {
+                LoadLevel(m_LevelSerializationPath);
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Save Level"))
+            {
+                SerializeLevel(m_LevelSerializationPath);
+            }
+            
+            ImGui::EndTabItem();
+        }
         if (ImGui::BeginTabItem("Entities"))
         {
             ImGui::Separator();
@@ -228,7 +248,7 @@ void ScenePlay::OnDrawGUI()
                     sprite,
                     sf::Vector2f(64, 64)))
                 {
-                    // TODO: Select tile
+                    m_CurrentSelectedTile = value;
                 }
 
                 ImGui::Separator();
@@ -239,26 +259,6 @@ void ScenePlay::OnDrawGUI()
         if (ImGui::BeginTabItem("Settings"))
         {
             ImGui::Checkbox("Debug Overlay", &m_ShowDebugOverlay);
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Level"))
-        {
-            ImGui::Separator();
-
-            ImGui::InputText("Level Path", m_LevelSerializationPath, IM_ARRAYSIZE(m_LevelSerializationPath));
-
-            if (ImGui::Button("Load Level"))
-            {
-                LoadLevel(m_LevelSerializationPath);
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Save Level"))
-            {
-                SerializeLevel(m_LevelSerializationPath);
-            }
-            
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();

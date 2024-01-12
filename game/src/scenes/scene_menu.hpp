@@ -31,4 +31,6 @@ class SceneMenu : public Scene {
             bool DebugRenderColliders = false;
         } 
         m_SystemToggles;
+
+        char m_LevelPath[1024] = {'\0'};
 };

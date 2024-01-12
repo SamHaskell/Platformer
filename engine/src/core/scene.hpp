@@ -46,6 +46,6 @@ class Scene {
         std::map<u32, std::string> m_ActionMap;
         bool m_Paused;
 
-        bool m_ShowDebugTools = false;
+        bool m_ShowDebugTools = true;
         bool m_ShowDebugOverlay = false;
 };

@@ -231,6 +231,20 @@ void SceneMenu::OnDrawGUI() {
     }
 
     if (ImGui::BeginTabBar("##TabBar")) {
+        if (ImGui::BeginTabItem("Level"))
+        {
+            ImGui::Separator();
+
+            ImGui::InputText("Level Path", m_LevelPath, IM_ARRAYSIZE(m_LevelPath));
+
+            if (ImGui::Button("Load Level"))
+            {
+                m_Game->ChangeScene("Play",
+                                    std::make_shared<ScenePlay>(
+                                        m_Game, m_LevelPath));
+            }
+            ImGui::EndTabItem();
+        }
         if (ImGui::BeginTabItem("Entities")) {
             ImGui::Separator();
 
