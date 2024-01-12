@@ -1,11 +1,6 @@
 #include "scene_play.hpp"
 #include "scene_menu.hpp"
 
-#include "../systems/debugsystems.hpp"
-#include "../systems/rendersystems.hpp"
-#include "../systems/updatesystems.hpp"
-#include "../systems/physicssystems.hpp"
-
 #include "core/game.hpp"
 #include "core/resources.hpp"
 #include "core/scene.hpp"
@@ -82,10 +77,12 @@ void ScenePlay::OnAction(Action action)
             if (m_PaintTiles)
             {
                 Vec2 mousePos = ScreenToWorld({(f32)action.Position.x, (f32)action.Position.y});
-                Vec2 tilePos = {(f32)((i32)mousePos.x / 32), (f32)((i32)mousePos.y / 32)};
+                mousePos = Vec2{(f32)std::floor(mousePos.x / 32.0f), (f32)std::floor(mousePos.y / 32.0f)} * 32.0f;
+                mousePos.x += 16.0f;
 
                 auto e = m_World.AddEntity("tile");
-                e->AddComponent<CTransform>(tilePos * 32.0f, Vec2{2.0f, 2.0f}, 0.0f);
+
+                e->AddComponent<CTransform>(mousePos, Vec2{2.0f, 2.0f}, 0.0f);
                 e->AddComponent<CSprite>(
                     ResourceManager::GetInstance().GetTexture(m_CurrentSelectedTile.TextureSource),
                     m_CurrentSelectedTile.OffsetX,
@@ -178,6 +175,11 @@ void ScenePlay::Render(sf::RenderWindow *window)
     if (m_SystemToggles.DebugRenderCamera)
     {
         DebugRenderCamera(window);
+    }
+
+    if (m_PaintTiles)
+    {
+        Systems::EditorRenderSelectedTileSprite(window, m_World, m_Camera, m_CameraParams, m_CurrentSelectedTile, m_CurrentSelectedTileSprite, ScreenToWorld(m_Game->GetMousePosition()));
     }
 }
 
@@ -445,8 +447,8 @@ void ScenePlay::SerializeLevel(const std::string& path)
             {
                 json tile;
                 tile["type"] = e->GetComponent<CTile>().Name;
-                tile["x"] = (i32)(e->GetComponent<CTransform>().Position.x / 32.0f);
-                tile["y"] = (i32)(e->GetComponent<CTransform>().Position.y / 32.0f);
+                tile["x"] = std::floor(e->GetComponent<CTransform>().Position.x / 32.0f);
+                tile["y"] = std::floor(e->GetComponent<CTransform>().Position.y / 32.0f);
                 tiles.push_back(tile);
             }
         }
@@ -459,8 +461,8 @@ void ScenePlay::SerializeLevel(const std::string& path)
             {
                 json tile;
                 tile["type"] = e->GetComponent<CTile>().Name;
-                tile["x"] = (i32)(e->GetComponent<CTransform>().Position.x / 32.0f);
-                tile["y"] = (i32)(e->GetComponent<CTransform>().Position.y / 32.0f);
+                tile["x"] = std::floor(e->GetComponent<CTransform>().Position.x / 32.0f);
+                tile["y"] = std::floor(e->GetComponent<CTransform>().Position.y / 32.0f);
                 decorations.push_back(tile);
             }
         }

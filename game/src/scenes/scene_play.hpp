@@ -3,15 +3,10 @@
 #include "core/scene.hpp"
 #include "core/entity.hpp"
 
-struct TileData
-{
-    std::string Name;
-    std::string TextureSource;
-    u32 Width;
-    u32 Height;
-    i32 OffsetX;
-    i32 OffsetY;
-};
+#include "../systems/debugsystems.hpp"
+#include "../systems/rendersystems.hpp"
+#include "../systems/updatesystems.hpp"
+#include "../systems/physicssystems.hpp"
 
 class ScenePlay : public Scene {
     public:

@@ -34,6 +34,19 @@ namespace Systems {
         }
     }
 
+    void EditorRenderSelectedTileSprite(sf::RenderWindow* window, World& world, sf::View& camera, CameraParams& cameraParams, TileData& currentSelectedTile, sf::Sprite& currentSelectedTileSprite, Vec2 mousePos)
+    {
+        window->setView(camera);
+
+        mousePos = Vec2{(f32)std::floor(mousePos.x / 32.0f), (f32)std::floor(mousePos.y / 32.0f)} * 32.0f;
+        mousePos.x += 16.0f;
+
+        currentSelectedTileSprite.setScale(2.0f, 2.0f);
+        currentSelectedTileSprite.setPosition(mousePos.x, cameraParams.FrameHeight - mousePos.y);
+        currentSelectedTileSprite.setOrigin(currentSelectedTile.Width / 2.0f, currentSelectedTile.Height);
+        window->draw(currentSelectedTileSprite);   
+    }
+
     void RenderButtons(sf::RenderWindow* window, World& world, sf::View& camera, CameraParams& cameraParams)
     {
         window->setView(camera);
