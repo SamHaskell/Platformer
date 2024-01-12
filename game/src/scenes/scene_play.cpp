@@ -30,6 +30,11 @@ void ScenePlay::OnSceneEnter() {
     RegisterAction(sf::Keyboard::F1, "ToggleDebugTools");
 
     LoadLevel(m_LevelPath);
+
+    for (auto &entry : std::filesystem::directory_iterator("assets/levels")) {
+        m_LevelPaths.push_back(entry.path().string());
+        NT_INFO("Found level: %s", entry.path().string().c_str());
+    }
 }
 
 void ScenePlay::OnSceneExit() {}
@@ -56,7 +61,8 @@ void ScenePlay::OnAction(Action action) {
         if (action.Type == ActionType::Begin) {
             if (m_PaintTiles) {
                 Vec2 mousePos = ScreenToWorld(
-                    {(f32)action.Position.x, (f32)action.Position.y}, m_Camera, *m_Game->GetWindow());
+                    {(f32)action.Position.x, (f32)action.Position.y}, m_Camera,
+                    *m_Game->GetWindow());
                 mousePos = Vec2{(f32)std::floor(mousePos.x / 32.0f),
                                 (f32)std::floor(mousePos.y / 32.0f)} *
                            32.0f;
@@ -166,14 +172,37 @@ void ScenePlay::OnDrawGUI() {
             ImGui::InputText("Level Path", m_LevelSerializationPath,
                              IM_ARRAYSIZE(m_LevelSerializationPath));
 
-            if (ImGui::Button("Load Level")) {
-                LoadLevel(m_LevelSerializationPath);
+            if (ImGui::Button("Save Level")) {
+                SerializeLevel(m_LevelSerializationPath);
             }
+
+            ImGui::Separator();
+
+            if (ImGui::Button("Reset Level")) {
+                LoadLevel(m_LevelPath);
+            }
+
+            ImGui::Separator();
+
+            ImGui::PushID("test");
+            if (ImGui::Combo(
+                    "", &m_CurrentLevelIndex,
+                    [](void *data, int idx, const char **out_text) {
+                        auto &levelPaths =
+                            *static_cast<std::vector<std::string> *>(data);
+                        if (idx >= levelPaths.size() || idx < 0)
+                            return false;
+                        *out_text = levelPaths[idx].c_str();
+                        return true;
+                    },
+                    static_cast<void*>(&m_LevelPaths), m_LevelPaths.size())) {
+            }
+            ImGui::PopID();
 
             ImGui::SameLine();
 
-            if (ImGui::Button("Save Level")) {
-                SerializeLevel(m_LevelSerializationPath);
+            if (ImGui::Button("Load")) {
+                LoadLevel(m_LevelPaths[m_CurrentLevelIndex]);
             }
 
             ImGui::EndTabItem();

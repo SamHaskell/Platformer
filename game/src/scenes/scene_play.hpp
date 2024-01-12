@@ -59,6 +59,9 @@ class ScenePlay : public Scene {
         TileData m_CurrentSelectedTile;
         sf::Sprite m_CurrentSelectedTileSprite;
 
+        std::vector<std::string> m_LevelPaths = {};
+        i32 m_CurrentLevelIndex = 0;
+
         // Runtime
 
         Grid m_WorldGrid = {32, 32};
