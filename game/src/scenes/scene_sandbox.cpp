@@ -68,8 +68,6 @@ void SceneSandbox::OnAction(Action action)
 void SceneSandbox::Update(f64 dt)
 {
     m_World.Update();
-
-
 }
 
 void SceneSandbox::Render(sf::RenderWindow *window)

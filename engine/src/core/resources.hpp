@@ -9,7 +9,8 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-struct Animation {
+struct Animation 
+{
     std::string TextureSourceName;
     u32 FrameCount;
     f64 FrameTime;
@@ -29,7 +30,8 @@ struct Animation {
     }
 };
 
-class ResourceManager : public Singleton<ResourceManager> {
+class ResourceManager : public Singleton<ResourceManager> 
+{
     public:
         void AddTexture(const std::string& name, const std::string& path);
         void AddSound(const std::string& name, const std::string& path);

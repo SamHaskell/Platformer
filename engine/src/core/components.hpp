@@ -88,10 +88,11 @@ struct CTile : Component
     u32 Height = 0;
     u32 OffsetX = 0;
     u32 OffsetY = 0;
+    bool SerializeCollider = false;
 
     CTile() = default;
-    CTile(const std::string& name, const std::string& textureSource, u32 width, u32 height, u32 offsetX, u32 offsetY) :
-        Name(name), TextureSource(textureSource), Width(width), Height(height), OffsetX(offsetX), OffsetY(offsetY) {}
+    CTile(const std::string& name, const std::string& textureSource, u32 width, u32 height, u32 offsetX, u32 offsetY, bool serializeCollider = false) :
+        Name(name), TextureSource(textureSource), Width(width), Height(height), OffsetX(offsetX), OffsetY(offsetY), SerializeCollider(serializeCollider) {}
 };
 
 struct CSpriteAnimator : Component
@@ -103,12 +104,14 @@ struct CSpriteAnimator : Component
     f64 TimeAccumulator = 0.0;
 
     CSpriteAnimator() = default;
-    CSpriteAnimator(Animation anim, bool loop = true) : AnimationSource(anim), IsLooping(loop) {
+    CSpriteAnimator(Animation anim, bool loop = true) : AnimationSource(anim), IsLooping(loop) 
+    {
         CurrentFrame = 0;
         TimeAccumulator = 0.0;
     }
 
-    void SetAnimation(Animation anim, bool loop = true) {
+    void SetAnimation(Animation anim, bool loop = true) 
+    {
         if (anim == AnimationSource) return;
         AnimationSource = anim;
         IsFinished = false;

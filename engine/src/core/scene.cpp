@@ -4,8 +4,10 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
-void Scene::RegisterAction(i32 keycode, std::string name) {
-    if (m_ActionMap.find(keycode) != m_ActionMap.end()) {
+void Scene::RegisterAction(i32 keycode, std::string name) 
+{
+    if (m_ActionMap.find(keycode) != m_ActionMap.end()) 
+    {
         NT_ERROR("Could not bind action, action bound to given key already exists.");
         return;
     }
@@ -13,9 +15,11 @@ void Scene::RegisterAction(i32 keycode, std::string name) {
     m_ActionMap.insert(std::make_pair(keycode, name));
 }
 
-bool Scene::GetAction(i32 keycode, std::string& name) {
+bool Scene::GetAction(i32 keycode, std::string& name) 
+{
     bool found = m_ActionMap.find(keycode) != m_ActionMap.end();
-    if (found) {
+    if (found) 
+    {
         name = m_ActionMap[keycode];
     }
     return found;
@@ -23,7 +27,8 @@ bool Scene::GetAction(i32 keycode, std::string& name) {
 
 void Scene::DrawGUI()
 {
-    if (m_ShowDebugTools) {
+    if (m_ShowDebugTools) 
+    {
         if (m_ShowDebugOverlay)
         {
             ImGuiIO &io = ImGui::GetIO();

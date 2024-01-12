@@ -11,7 +11,9 @@ f32 Vec2::Magnitude(const Vec2 &v)
     if (SqrMagnitude(v) == 0.0f)
     {
         return 0.0f;
-    } else {
+    } 
+    else 
+    {
         return sqrtf(SqrMagnitude(v));
     }
 }
@@ -22,7 +24,9 @@ Vec2 Vec2::Normalised(const Vec2 &v)
     if (normalisation == 0.0f)
     {
         return {0.0f, 0.0f};
-    } else {
+    } 
+    else 
+    {
         return {v.x * normalisation, v.y * normalisation};
     }
 }

@@ -1,303 +1,306 @@
 {
-    "tileset" : [
+    "tiles": [
         {
-            "name" : "grass",
-            "texture-source" : "tex_tilesheet",
-            "width" : 16,
-            "height" : 16,
-            "offset-x" : 48,
-            "offset-y" : 16
+            "collides": true,
+            "type": "dirt",
+            "x": 0.0,
+            "y": 0.0
         },
         {
-            "name" : "grass-left",
-            "texture-source" : "tex_tilesheet",
-            "width" : 16,
-            "height" : 16,
-            "offset-x" : 16,
-            "offset-y" : 16
+            "collides": true,
+            "type": "dirt",
+            "x": 1.0,
+            "y": 0.0
         },
         {
-            "name" : "grass-right",
-            "texture-source" : "tex_tilesheet",
-            "width" : 16,
-            "height" : 16,
-            "offset-x" : 80,
-            "offset-y" : 16
+            "collides": true,
+            "type": "dirt",
+            "x": 2.0,
+            "y": 0.0
         },
         {
-            "name" : "dirt",
-            "texture-source" : "tex_tilesheet",
-            "width" : 16,
-            "height" : 16,
-            "offset-x" : 48,
-            "offset-y" : 48
+            "collides": true,
+            "type": "dirt",
+            "x": 3.0,
+            "y": 0.0
         },
         {
-            "name" : "dirt-left",
-            "texture-source" : "tex_tilesheet",
-            "width" : 16,
-            "height" : 16,
-            "offset-x" : 16,
-            "offset-y" : 48
+            "collides": true,
+            "type": "dirt",
+            "x": 4.0,
+            "y": 0.0
         },
         {
-            "name" : "dirt-right",
-            "texture-source" : "tex_tilesheet",
-            "width" : 16,
-            "height" : 16,
-            "offset-x" : 80,
-            "offset-y" : 48
+            "collides": true,
+            "type": "dirt",
+            "x": 5.0,
+            "y": 0.0
         },
         {
-            "name" : "platform",
-            "texture-source" : "tex_tilesheet",
-            "width" : 16,
-            "height" : 16,
-            "offset-x" : 272,
-            "offset-y" : 224
+            "collides": true,
+            "type": "dirt",
+            "x": 6.0,
+            "y": 0.0
         },
         {
-            "name" : "platform-left",
-            "texture-source" : "tex_tilesheet",
-            "width" : 16,
-            "height" : 16,
-            "offset-x" : 240,
-            "offset-y" : 224
+            "collides": true,
+            "type": "dirt",
+            "x": 7.0,
+            "y": 0.0
         },
         {
-            "name" : "platform-right",
-            "texture-source" : "tex_tilesheet",
-            "width" : 16,
-            "height" : 16,
-            "offset-x" : 304,
-            "offset-y" : 224
+            "collides": true,
+            "type": "dirt",
+            "x": 8.0,
+            "y": 0.0
+        },
+        {
+            "collides": true,
+            "type": "dirt",
+            "x": 9.0,
+            "y": 0.0
+        },
+        {
+            "collides": true,
+            "type": "dirt",
+            "x": 10.0,
+            "y": 0.0
+        },
+        {
+            "collides": true,
+            "type": "dirt",
+            "x": 11.0,
+            "y": 0.0
+        },
+        {
+            "collides": true,
+            "type": "dirt-right",
+            "x": 12.0,
+            "y": 0.0
+        },
+        {
+            "collides": true,
+            "type": "dirt-left",
+            "x": 16.0,
+            "y": 0.0
+        },
+        {
+            "collides": true,
+            "type": "dirt",
+            "x": 17.0,
+            "y": 0.0
+        },
+        {
+            "collides": true,
+            "type": "dirt",
+            "x": 18.0,
+            "y": 0.0
+        },
+        {
+            "collides": true,
+            "type": "dirt",
+            "x": 19.0,
+            "y": 0.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 0.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 1.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 2.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 3.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 4.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 5.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 6.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 7.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 8.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 9.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 10.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 11.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass-right",
+            "x": 12.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass-left",
+            "x": 16.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 17.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 18.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "grass",
+            "x": 19.0,
+            "y": 1.0
+        },
+        {
+            "collides": true,
+            "type": "platform-left",
+            "x": 4.0,
+            "y": 4.0
+        },
+        {
+            "collides": true,
+            "type": "platform",
+            "x": 5.0,
+            "y": 4.0
+        },
+        {
+            "collides": true,
+            "type": "platform",
+            "x": 6.0,
+            "y": 4.0
+        },
+        {
+            "collides": true,
+            "type": "platform-right",
+            "x": 7.0,
+            "y": 4.0
         }
     ],
-    "tiles" : [
+    "tileset": [
         {
-            "type" : "dirt",
-            "x" : 0,
-            "y" : 0
+            "height": 16,
+            "name": "dirt",
+            "offset-x": 48,
+            "offset-y": 48,
+            "texture-source": "tex_tilesheet",
+            "width": 16
         },
         {
-            "type" : "dirt",
-            "x" : 1,
-            "y" : 0
+            "height": 16,
+            "name": "dirt-left",
+            "offset-x": 16,
+            "offset-y": 48,
+            "texture-source": "tex_tilesheet",
+            "width": 16
         },
         {
-            "type" : "dirt",
-            "x" : 2,
-            "y" : 0
+            "height": 16,
+            "name": "dirt-right",
+            "offset-x": 80,
+            "offset-y": 48,
+            "texture-source": "tex_tilesheet",
+            "width": 16
         },
         {
-            "type" : "dirt",
-            "x" : 3,
-            "y" : 0
+            "height": 16,
+            "name": "grass",
+            "offset-x": 48,
+            "offset-y": 16,
+            "texture-source": "tex_tilesheet",
+            "width": 16
         },
         {
-            "type" : "dirt",
-            "x" : 4,
-            "y" : 0
+            "height": 16,
+            "name": "grass-left",
+            "offset-x": 16,
+            "offset-y": 16,
+            "texture-source": "tex_tilesheet",
+            "width": 16
         },
         {
-            "type" : "dirt",
-            "x" : 5,
-            "y" : 0
+            "height": 16,
+            "name": "grass-right",
+            "offset-x": 80,
+            "offset-y": 16,
+            "texture-source": "tex_tilesheet",
+            "width": 16
         },
         {
-            "type" : "dirt",
-            "x" : 6,
-            "y" : 0
+            "height": 16,
+            "name": "platform",
+            "offset-x": 272,
+            "offset-y": 224,
+            "texture-source": "tex_tilesheet",
+            "width": 16
         },
         {
-            "type" : "dirt",
-            "x" : 7,
-            "y" : 0
+            "height": 16,
+            "name": "platform-left",
+            "offset-x": 240,
+            "offset-y": 224,
+            "texture-source": "tex_tilesheet",
+            "width": 16
         },
         {
-            "type" : "dirt",
-            "x" : 8,
-            "y" : 0
-        },
-        {
-            "type" : "dirt",
-            "x" : 9,
-            "y" : 0
-        },
-        {
-            "type" : "dirt",
-            "x" : 10,
-            "y" : 0
-        },
-        {
-            "type" : "dirt",
-            "x" : 11,
-            "y" : 0
-        },
-        {
-            "type" : "dirt-right",
-            "x" : 12,
-            "y" : 0
-        },
-
-        {
-            "type" : "dirt-left",
-            "x" : 16,
-            "y" : 0
-        },
-        {
-            "type" : "dirt",
-            "x" : 17,
-            "y" : 0
-        },
-        {
-            "type" : "dirt",
-            "x" : 18,
-            "y" : 0
-        },
-        {
-            "type" : "dirt",
-            "x" : 19,
-            "y" : 0
-        },
-        {
-            "type" : "grass",
-            "x" : 0,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 1,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 2,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 3,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 4,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 5,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 6,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 7,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 8,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 9,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 10,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 11,
-            "y" : 1
-        },
-        {
-            "type" : "grass-right",
-            "x" : 12,
-            "y" : 1
-        },
-
-        {
-            "type" : "grass-left",
-            "x" : 16,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 17,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 18,
-            "y" : 1
-        },
-        {
-            "type" : "grass",
-            "x" : 19,
-            "y" : 1
-        },
-
-        {
-            "type" : "platform-left",
-            "x" : 4,
-            "y" : 4
-        },
-        {
-            "type" : "platform",
-            "x" : 5,
-            "y" : 4
-        },
-        {
-            "type" : "platform",
-            "x" : 6,
-            "y" : 4
-        },
-        {
-            "type" : "platform-right",
-            "x" : 7,
-            "y" : 4
-        }
-    ],
-    "decorations" : [
-        {
-            "type" : "dirt-left",
-            "x" : 5,
-            "y" : 2
-        },
-        {
-            "type" : "dirt-right",
-            "x" : 6,
-            "y" : 2
-        },
-        {
-            "type" : "dirt-left",
-            "x" : 5,
-            "y" : 3
-        },
-        {
-            "type" : "dirt-right",
-            "x" : 6,
-            "y" : 3
-        },
-        {
-            "type" : "dirt-left",
-            "x" : 5,
-            "y" : 4
-        },
-        {
-            "type" : "dirt-right",
-            "x" : 6,
-            "y" : 4
+            "height": 16,
+            "name": "platform-right",
+            "offset-x": 304,
+            "offset-y": 224,
+            "texture-source": "tex_tilesheet",
+            "width": 16
         }
     ]
 }

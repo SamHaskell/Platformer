@@ -3,7 +3,8 @@
 #include "common.hpp"
 #include "core/scene.hpp"
 
-class SceneSandbox : public Scene {
+class SceneSandbox : public Scene 
+{
     public:
         SceneSandbox(Game* game);
         ~SceneSandbox() = default;

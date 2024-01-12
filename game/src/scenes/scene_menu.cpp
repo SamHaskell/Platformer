@@ -12,7 +12,8 @@
 #include "imgui-SFML.h"
 #include "imgui.h"
 
-void SceneMenu::AddTestButtons() {
+void SceneMenu::AddTestButtons() 
+{
     {
         auto e = m_World.AddEntity("button");
         auto &coll = e->AddComponent<CBoxCollider>(Vec2{256, 64});
@@ -113,10 +114,12 @@ void SceneMenu::AddTestButtons() {
     }
 }
 
-void SceneMenu::PhysicsCheckButtons(World &world, f64 dt) {
+void SceneMenu::PhysicsCheckButtons(World &world, f64 dt) 
+{
     auto buttons = world.GetEntitiesWithTag("button");
 
-    for (auto e : buttons) {
+    for (auto e : buttons) 
+    {
         auto &button = e->GetComponent<CButton>();
 
         // Check mouse position and button collider.
@@ -132,24 +135,34 @@ void SceneMenu::PhysicsCheckButtons(World &world, f64 dt) {
 
         bool leftClick = m_Game->IsMouseButtonDown(sf::Mouse::Left);
 
-        if (Physics2D::PointInAABB(mouseWorldPos, buttonBox)) {
-            if (!button.IsDown && leftClick) {
+        if (Physics2D::PointInAABB(mouseWorldPos, buttonBox)) 
+        {
+            if (!button.IsDown && leftClick) 
+            {
                 button.IsDown = true;
                 button.OnPress();
-            } else if (button.IsDown && !leftClick) {
+            } 
+            else if (button.IsDown && !leftClick) 
+            {
                 button.IsDown = false;
                 button.OnRelease();
             }
 
-            if (!button.IsHovering) {
+            if (!button.IsHovering) 
+            {
                 button.IsHovering = true;
                 button.OnHoverEnter();
             }
-        } else {
-            if (button.IsDown) {
+        } 
+        else 
+        {
+            if (button.IsDown) 
+            {
                 button.IsDown = false;
                 button.OnRelease();
-            } else if (button.IsHovering) {
+            } 
+            else if (button.IsHovering) 
+            {
                 button.IsHovering = false;
                 button.OnHoverExit();
             }
@@ -159,7 +172,8 @@ void SceneMenu::PhysicsCheckButtons(World &world, f64 dt) {
 
 SceneMenu::SceneMenu(Game *game) : Scene(game) {}
 
-void SceneMenu::OnSceneEnter() {
+void SceneMenu::OnSceneEnter() 
+{
     RegisterAction(sf::Keyboard::Up, "Up");
     RegisterAction(sf::Keyboard::Left, "Left");
     RegisterAction(sf::Keyboard::Right, "Right");
@@ -181,56 +195,79 @@ void SceneMenu::OnSceneEnter() {
 
 void SceneMenu::OnSceneExit() {}
 
-void SceneMenu::OnAction(Action action) {
-    if (action.Name == "Up") {
+void SceneMenu::OnAction(Action action) 
+{
+    if (action.Name == "Up") 
+    {
 
-    } else if (action.Name == "Left") {
+    } 
+    else if (action.Name == "Left") 
+    {
 
-    } else if (action.Name == "Right") {
+    } 
+    else if (action.Name == "Right") 
+    {
 
-    } else if (action.Name == "Down") {
+    } 
+    else if (action.Name == "Down") 
+    {
 
-    } else if (action.Name == "ToggleDebugTools" &&
-               action.Type == ActionType::Begin) {
+    } 
+    else if (action.Name == "ToggleDebugTools" &&
+               action.Type == ActionType::Begin) 
+    {
         m_ShowDebugTools = !m_ShowDebugTools;
-    } else if (action.Name == "LeftClick") {
+    } 
+    else if (action.Name == "LeftClick") 
+    {
+    
     }
 }
 
-void SceneMenu::Update(f64 dt) {
+void SceneMenu::Update(f64 dt) 
+{
     m_World.Update();
 
-    if (m_SystemToggles.PhysicsCheckButtons) {
+    if (m_SystemToggles.PhysicsCheckButtons) 
+    {
         PhysicsCheckButtons(m_World, dt);
     }
 }
 
-void SceneMenu::Render(sf::RenderWindow *window) {
-    if (m_SystemToggles.RenderBackground) {
+void SceneMenu::Render(sf::RenderWindow *window) 
+{
+    if (m_SystemToggles.RenderBackground) 
+    {
         Systems::RenderBackground(window);
     }
 
-    if (m_SystemToggles.RenderSprites) {
+    if (m_SystemToggles.RenderSprites) 
+    {
         Systems::RenderSprites(window, m_World, m_Camera, m_CameraParams);
     }
 
-    if (m_SystemToggles.RenderButtons) {
+    if (m_SystemToggles.RenderButtons) 
+    {
         Systems::RenderButtons(window, m_World, m_Camera, m_CameraParams);
     }
 
-    if (m_SystemToggles.DebugRenderColliders) {
+    if (m_SystemToggles.DebugRenderColliders) 
+    {
         Systems::DebugRenderColliders(window, m_World, m_Camera,
                                       m_CameraParams);
     }
 }
 
-void SceneMenu::OnDrawGUI() {
-    if (!ImGui::Begin("Debug")) {
+void SceneMenu::OnDrawGUI() 
+{
+    if (!ImGui::Begin("Debug")) 
+    {
         ImGui::End();
         return;
     }
 
-    if (ImGui::BeginTabBar("##TabBar")) {
+    if (ImGui::BeginTabBar("##TabBar")) 
+    {
         if (ImGui::BeginTabItem("Level"))
         {
             ImGui::Separator();
@@ -245,14 +282,16 @@ void SceneMenu::OnDrawGUI() {
             }
             ImGui::EndTabItem();
         }
-        if (ImGui::BeginTabItem("Entities")) {
+        if (ImGui::BeginTabItem("Entities")) 
+        {
             ImGui::Separator();
 
             ImGui::Text("Entity Count: %u", m_World.GetEntityCount());
 
             ImGui::Separator();
 
-            for (auto e : m_World.GetEntities()) {
+            for (auto e : m_World.GetEntities()) 
+            {
                 ImGui::Text("Entity: %s", e->GetTag().c_str());
             }
 
@@ -260,7 +299,8 @@ void SceneMenu::OnDrawGUI() {
 
             ImGui::EndTabItem();
         }
-        if (ImGui::BeginTabItem("Systems")) {
+        if (ImGui::BeginTabItem("Systems")) 
+        {
             ImGui::SeparatorText("OnUpdate");
 
             ImGui::Checkbox("UpdatePositions",
@@ -287,12 +327,12 @@ void SceneMenu::OnDrawGUI() {
 
             ImGui::EndTabItem();
         }
-        if (ImGui::BeginTabItem("Settings")) {
+        if (ImGui::BeginTabItem("Settings")) 
+        {
             ImGui::Checkbox("Debug Overlay", &m_ShowDebugOverlay);
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
     }
-
     ImGui::End();
 }

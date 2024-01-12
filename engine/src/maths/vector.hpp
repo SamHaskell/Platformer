@@ -104,11 +104,14 @@ struct Vec2
 };
 
 struct Vec4 {
-    union {
-        struct {
+    union 
+    {
+        struct 
+        {
             f32 x, y, z, w;
         };
-        struct {
+        struct 
+        {
             f32 r, g, b, a;
         };
         f32 values[4];

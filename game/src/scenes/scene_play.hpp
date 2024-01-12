@@ -11,7 +11,8 @@
 
 
 
-class ScenePlay : public Scene {
+class ScenePlay : public Scene 
+{
     public:
         ScenePlay(Game* game, const std::string& levelPath);
         ~ScenePlay() = default;
@@ -55,7 +56,10 @@ class ScenePlay : public Scene {
         std::string m_LevelPath;
         char m_LevelSerializationPath[1024];
 
-        bool m_PaintTiles;
+        bool m_PaintTiles = false;
+        bool m_EraseTiles = false;
+        bool m_PaintColliders = false;
+        
         TileData m_CurrentSelectedTile;
         sf::Sprite m_CurrentSelectedTileSprite;
 

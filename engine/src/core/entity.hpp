@@ -49,7 +49,8 @@ class Entity {
 };
 
 template <typename TComponent>
-TComponent& Entity::GetComponent() {
+TComponent& Entity::GetComponent() 
+{
     return std::get<TComponent>(m_Components);
 }
 
@@ -61,7 +62,8 @@ void Entity::RemoveComponent()
 }
 
 template <typename TComponent, typename... TArgs>
-TComponent& Entity::AddComponent(TArgs&&... args) {
+TComponent& Entity::AddComponent(TArgs&&... args) 
+{
     auto& comp = GetComponent<TComponent>();
     comp = TComponent(std::forward<TArgs>(args)...);
     comp.Exists = true;
@@ -69,6 +71,7 @@ TComponent& Entity::AddComponent(TArgs&&... args) {
 }
 
 template <typename TComponent>
-bool Entity::HasComponent() {
+bool Entity::HasComponent() 
+{
     return GetComponent<TComponent>().Exists;
 }

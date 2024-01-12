@@ -9,7 +9,8 @@
 
 using EntityVector = std::vector<std::shared_ptr<Entity>>;
 
-class World {
+class World 
+{
     public:
         World() = default;
         ~World() = default;

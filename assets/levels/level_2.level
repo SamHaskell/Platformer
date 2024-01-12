@@ -1,627 +1,751 @@
 {
-    "decorations": [],
     "tiles": [
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 1.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 2.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 3.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 4.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 5.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 6.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 7.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 8.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 9.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 10.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 11.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt-right",
             "x": 12.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt-left",
             "x": 16.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 17.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 18.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 19.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 1.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 2.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 3.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 4.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 5.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 6.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 7.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 8.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 9.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 10.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 11.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass-right",
             "x": 12.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass-left",
             "x": 16.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 17.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 18.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 19.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "platform-left",
             "x": 4.0,
             "y": 4.0
         },
         {
+            "collides": true,
             "type": "platform",
             "x": 5.0,
             "y": 4.0
         },
         {
+            "collides": true,
             "type": "platform",
             "x": 6.0,
             "y": 4.0
         },
         {
+            "collides": true,
             "type": "platform-right",
             "x": 7.0,
             "y": 4.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 1.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 2.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 3.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 4.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "grass-left",
             "x": 0.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "platform-left",
             "x": 0.0,
             "y": 8.0
         },
         {
+            "collides": true,
             "type": "platform",
             "x": 0.0,
             "y": 8.0
         },
         {
+            "collides": true,
             "type": "platform",
             "x": 0.0,
             "y": 8.0
         },
         {
+            "collides": true,
             "type": "platform-right",
             "x": 0.0,
             "y": 8.0
         },
         {
+            "collides": true,
             "type": "platform-left",
             "x": 3.0,
             "y": 13.0
         },
         {
+            "collides": true,
             "type": "platform-right",
             "x": 4.0,
             "y": 13.0
         },
         {
+            "collides": true,
             "type": "platform-right",
             "x": 12.0,
             "y": 10.0
         },
         {
+            "collides": true,
             "type": "platform-left",
             "x": 10.0,
             "y": 10.0
         },
         {
+            "collides": true,
             "type": "platform",
             "x": 11.0,
             "y": 10.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 11.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 10.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 9.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 8.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 7.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 6.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 5.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 0.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt-right",
             "x": 12.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt-left",
             "x": 16.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 19.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 18.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": 17.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "grass-right",
             "x": 20.0,
             "y": 1.0
         },
         {
+            "collides": true,
             "type": "dirt-right",
             "x": 20.0,
             "y": 0.0
         },
         {
+            "collides": true,
             "type": "dirt-right",
             "x": 20.0,
             "y": -1.0
         },
         {
+            "collides": true,
             "type": "platform-right",
             "x": 1.0,
             "y": 8.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": -5.0,
             "y": 5.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": -6.0,
             "y": 4.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": -7.0,
             "y": 3.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": -6.0,
             "y": 5.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": -7.0,
             "y": 5.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": -7.0,
             "y": 4.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": -5.0,
             "y": 4.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": -5.0,
             "y": 3.0
         },
         {
+            "collides": true,
             "type": "dirt",
             "x": -6.0,
             "y": 3.0

@@ -98,19 +98,28 @@ void ResourceManager::LoadFromManifest(const std::string &path)
         std::string type = res["type"].template get<std::string>();
         std::string name = res["name"].template get<std::string>();
 
-        if (type == "texture") {
+        if (type == "texture") 
+        {
             std::string path = res["path"].template get<std::string>();
             AddTexture(name, path);
-        } else if (type == "animation") {
+        } 
+        else if (type == "animation") 
+        {
             json anim = res["animation"];
             AddAnimationFromMetadata(name, anim);
-        } else if (type == "sound") {
+        } 
+        else if (type == "sound") 
+        {
             std::string path = res["path"].template get<std::string>();
             AddSound(name, path);
-        } else if (type == "font") {
+        } 
+        else if (type == "font") 
+        {
             std::string path = res["path"].template get<std::string>();
             AddFont(name, path);
-        } else {
+        } 
+        else 
+        {
             NT_ERROR("Failed to parse resource from manifest of type: %s", type.c_str());
         }
     }

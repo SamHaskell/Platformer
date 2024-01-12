@@ -4,7 +4,8 @@
 #include "core/scene.hpp"
 #include "core/entity.hpp"
 
-class SceneMenu : public Scene {
+class SceneMenu : public Scene 
+{
     public:
         SceneMenu(Game* game);
         ~SceneMenu() = default;

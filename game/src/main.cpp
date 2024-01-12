@@ -10,7 +10,8 @@ int main()
 {
     Game* game = new Game();
     game->ChangeScene("test", std::make_shared<SceneMenu>(game));
-    while (!game->ShouldClose()) {
+    while (!game->ShouldClose()) 
+    {
         game->Tick();
     }
 }

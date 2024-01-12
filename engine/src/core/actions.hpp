@@ -12,7 +12,8 @@ struct Action
 {
     std::string Name;
     ActionType Type;
-    union {
+    union 
+    {
         Vec2 Position;
     };
 };
