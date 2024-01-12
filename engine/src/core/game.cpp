@@ -69,7 +69,7 @@ void Game::HandleEvent(sf::Event& event)
 
     if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
         std::string actionName;
-        if (scene->GetAction(event.key.code, actionName)) {
+        if (scene->GetAction(event.key.code, actionName) && !ImGui::GetIO().WantCaptureKeyboard) {
             if (!m_CachedKeyState[event.key.code] && (event.type == sf::Event::KeyPressed)) {
                 Action action = {
                     .Name = actionName,

@@ -107,6 +107,48 @@ namespace Systems {
         } 
     }
 
+    void UpdateTileSprites(World& world, f64 dt)
+    {
+        for (auto e: world.GetEntitiesWithTag("tile"))
+        {
+            if (e->HasComponent<CTile>() && e->HasComponent<CSprite>() && e->HasComponent<CBoxCollider>())
+            {
+                auto &tile = e->GetComponent<CTile>();
+                auto &sprite = e->GetComponent<CSprite>();
+                auto &collider = e->GetComponent<CBoxCollider>();
+
+                sprite.Sprite.setTexture(
+                    ResourceManager::GetInstance().GetTexture(tile.TextureSource));
+
+                sprite.Sprite.setTextureRect(sf::IntRect(
+                    tile.OffsetX,
+                    tile.OffsetY,
+                    tile.Width,
+                    tile.Height));
+
+                collider.Size = Vec2{ (f32) tile.Width, (f32) tile.Height };
+            }
+        }
+
+        for (auto e: world.GetEntitiesWithTag("decoration"))
+        {
+            if (e->HasComponent<CTile>() && e->HasComponent<CSprite>())
+            {
+                auto &tile = e->GetComponent<CTile>();
+                auto &sprite = e->GetComponent<CSprite>();
+
+                sprite.Sprite.setTexture(
+                    ResourceManager::GetInstance().GetTexture(tile.TextureSource));
+
+                sprite.Sprite.setTextureRect(sf::IntRect(
+                    tile.OffsetX,
+                    tile.OffsetY,
+                    tile.Width,
+                    tile.Height));
+            }
+        }
+    }
+
     void UpdatePlayerMovement(std::shared_ptr<Entity> player, f64 dt)
     {
         if (!player->HasComponent<CPlayerActions>())

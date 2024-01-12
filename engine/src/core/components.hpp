@@ -80,6 +80,20 @@ struct CSprite : Component
     };
 };
 
+struct CTile : Component
+{
+    std::string Name = "default";
+    std::string TextureSource = "default";
+    u32 Width = 0;
+    u32 Height = 0;
+    u32 OffsetX = 0;
+    u32 OffsetY = 0;
+
+    CTile() = default;
+    CTile(const std::string& name, const std::string& textureSource, u32 width, u32 height, u32 offsetX, u32 offsetY) :
+        Name(name), TextureSource(textureSource), Width(width), Height(height), OffsetX(offsetX), OffsetY(offsetY) {}
+};
+
 struct CSpriteAnimator : Component
 {
     Animation AnimationSource = {};

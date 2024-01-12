@@ -18,9 +18,9 @@
 #include <map>
 #include <fstream>
 
-ScenePlay::ScenePlay(Game *game, const char* levelPath) : Scene(game)
+ScenePlay::ScenePlay(Game *game, const std::string& levelPath) : Scene(game), m_LevelPath(levelPath)
 {
-    LoadLevel(levelPath);
+    std::strcpy(m_LevelSerializationPath, levelPath.c_str());
 }
 
 void ScenePlay::OnSceneEnter()
@@ -35,16 +35,7 @@ void ScenePlay::OnSceneEnter()
     RegisterAction(sf::Keyboard::Escape, "MainMenu");
     RegisterAction(sf::Keyboard::F1, "ToggleDebugTools");
 
-    SpawnPlayer();
-
-    m_CameraParams.CurrentPosition = m_Player->GetComponent<CTransform>().Position;
-
-    m_Camera.setSize(m_CameraParams.FrameWidth, m_CameraParams.FrameHeight);
-
-    m_Camera.setCenter(
-        (i32) m_CameraParams.CurrentPosition.x, 
-        (i32)(m_CameraParams.FrameHeight - m_CameraParams.CurrentPosition.y)
-    );
+    LoadLevel(m_LevelPath);
 }
 
 void ScenePlay::OnSceneExit()
@@ -118,6 +109,8 @@ void ScenePlay::Update(f64 dt)
     {
         Systems::UpdatePositions(m_World, dt);
     }
+
+    Systems::UpdateTileSprites(m_World, dt);
 
     if (m_SystemToggles.UpdatePlayerAnimationState)
     {
@@ -248,6 +241,26 @@ void ScenePlay::OnDrawGUI()
             ImGui::Checkbox("Debug Overlay", &m_ShowDebugOverlay);
             ImGui::EndTabItem();
         }
+        if (ImGui::BeginTabItem("Level"))
+        {
+            ImGui::Separator();
+
+            ImGui::InputText("Level Path", m_LevelSerializationPath, IM_ARRAYSIZE(m_LevelSerializationPath));
+
+            if (ImGui::Button("Load Level"))
+            {
+                LoadLevel(m_LevelSerializationPath);
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Save Level"))
+            {
+                SerializeLevel(m_LevelSerializationPath);
+            }
+            
+            ImGui::EndTabItem();
+        }
         ImGui::EndTabBar();
     }
 
@@ -373,9 +386,82 @@ void ScenePlay::DebugRenderCamera(sf::RenderWindow *window)
     window->draw(rect, sf::BlendAlpha);
 }
 
+void ScenePlay::SerializeLevel(const std::string& path)
+{
+    std::ofstream file(path);
+    if (!file.is_open())
+    {
+        NT_ERROR("Failed to open level file to write to: %s", path.c_str());
+        return;
+    }
+
+    json data;
+    {
+        std::vector<json> tileset;
+        for (auto &[key, value] : m_TileData)
+        {
+            json tile;
+            tile["name"] = key;
+            tile["texture-source"] = value.TextureSource;
+            tile["width"] = value.Width;
+            tile["height"] = value.Height;
+            tile["offset-x"] = value.OffsetX;
+            tile["offset-y"] = value.OffsetY;
+            tileset.push_back(tile);
+        }
+        data["tileset"] = tileset;
+
+        std::vector<json> tiles;
+        for (auto e : m_World.GetEntitiesWithTag("tile"))
+        {
+            if (e->HasComponent<CTransform>() && e->HasComponent<CTile>())
+            {
+                json tile;
+                tile["type"] = e->GetComponent<CTile>().Name;
+                tile["x"] = (i32)(e->GetComponent<CTransform>().Position.x / 32.0f);
+                tile["y"] = (i32)(e->GetComponent<CTransform>().Position.y / 32.0f);
+                tiles.push_back(tile);
+            }
+        }
+        data["tiles"] = tiles;
+
+        std::vector<json> decorations;
+        for (auto e : m_World.GetEntitiesWithTag("decoration"))
+        {
+            if (e->HasComponent<CTransform>() && e->HasComponent<CTile>())
+            {
+                json tile;
+                tile["type"] = e->GetComponent<CTile>().Name;
+                tile["x"] = (i32)(e->GetComponent<CTransform>().Position.x / 32.0f);
+                tile["y"] = (i32)(e->GetComponent<CTransform>().Position.y / 32.0f);
+                decorations.push_back(tile);
+            }
+        }
+        data["decorations"] = decorations;
+    }
+
+    // Write to file.
+
+    file << data.dump(4);
+    file.close();
+}
+
 void ScenePlay::LoadLevel(const std::string &path)
 {
+    m_LevelPath = path;
+
     m_World = World();
+
+    SpawnPlayer();
+
+    m_CameraParams.CurrentPosition = m_Player->GetComponent<CTransform>().Position;
+
+    m_Camera.setSize(m_CameraParams.FrameWidth, m_CameraParams.FrameHeight);
+
+    m_Camera.setCenter(
+        (i32) m_CameraParams.CurrentPosition.x, 
+        (i32)(m_CameraParams.FrameHeight - m_CameraParams.CurrentPosition.y)
+    );
 
     std::ifstream file(path);
     if (!file.is_open())
@@ -433,6 +519,8 @@ void ScenePlay::LoadLevel(const std::string &path)
                 tile.Height,
                 1.0f);
 
+            e->AddComponent<CTile>(type, tile.TextureSource, tile.Width, tile.Height, tile.OffsetX, tile.OffsetY);
+
             e->AddComponent<CBoxCollider>(Vec2{(f32)tile.Width, (f32)tile.Height});
         }
     }
@@ -460,6 +548,8 @@ void ScenePlay::LoadLevel(const std::string &path)
                 tile.Width,
                 tile.Height,
                 0.0f);
+
+            e->AddComponent<CTile>(type, tile.TextureSource, tile.Width, tile.Height, tile.OffsetX, tile.OffsetY);
         }
     }
 }

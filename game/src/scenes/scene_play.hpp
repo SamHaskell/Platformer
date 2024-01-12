@@ -14,7 +14,7 @@ struct TileData
 
 class ScenePlay : public Scene {
     public:
-        ScenePlay(Game* game, const char* levelPath);
+        ScenePlay(Game* game, const std::string& levelPath);
         ~ScenePlay() = default;
 
         void OnSceneEnter() override;
@@ -29,6 +29,8 @@ class ScenePlay : public Scene {
         void DebugRenderCamera(sf::RenderWindow* window);
         
         void SpawnPlayer();
+
+        void SerializeLevel(const std::string& path);
         void LoadLevel(const std::string& path);
 
     private:
@@ -48,6 +50,9 @@ class ScenePlay : public Scene {
             bool DebugRenderCamera = false;
         } 
         m_SystemToggles;
+
+        std::string m_LevelPath;
+        char m_LevelSerializationPath[1024];
 
         std::map<std::string, TileData> m_TileData;
         std::shared_ptr<Entity> m_Player;

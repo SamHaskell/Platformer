@@ -23,7 +23,8 @@ class Entity {
         CGravity,
         CBoxCollider,
         CPlayerController,
-        CButton
+        CButton,
+        CTile
     >;
 
     public:
