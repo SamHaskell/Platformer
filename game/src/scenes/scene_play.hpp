@@ -5,6 +5,7 @@
 
 struct TileData
 {
+    std::string Name;
     std::string TextureSource;
     u32 Width;
     u32 Height;
@@ -54,7 +55,9 @@ class ScenePlay : public Scene {
         std::string m_LevelPath;
         char m_LevelSerializationPath[1024];
 
+        bool m_PaintTiles;
         TileData m_CurrentSelectedTile;
+        sf::Sprite m_CurrentSelectedTileSprite;
 
         std::map<std::string, TileData> m_TileData;
         std::shared_ptr<Entity> m_Player;

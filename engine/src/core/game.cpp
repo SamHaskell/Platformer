@@ -98,36 +98,39 @@ void Game::HandleEvent(sf::Event& event)
     }
 
     if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased) {
-        switch (event.mouseButton.button)
-        {
-            case sf::Mouse::Left:
+        if (!ImGui::GetIO().WantCaptureMouse) {
+            switch (event.mouseButton.button)
             {
-                Action action = {
-                    .Name = "LeftClick",
-                    .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
-                    .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
-                };
-                scene->OnAction(action);
-            } break;
-            case sf::Mouse::Right:
-            {
-                Action action = {
-                    .Name = "RightClick",
-                    .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
-                    .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
-                };
-                scene->OnAction(action);
-            } break;
-            case sf::Mouse::Middle:
-            {
-                Action action = {
-                    .Name = "MiddleClick",
-                    .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
-                    .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
-                };
-                scene->OnAction(action);
-            } break;
+                case sf::Mouse::Left:
+                {
+                    Action action = {
+                        .Name = "LeftClick",
+                        .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
+                        .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
+                    };
+                    scene->OnAction(action);
+                } break;
+                case sf::Mouse::Right:
+                {
+                    Action action = {
+                        .Name = "RightClick",
+                        .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
+                        .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
+                    };
+                    scene->OnAction(action);
+                } break;
+                case sf::Mouse::Middle:
+                {
+                    Action action = {
+                        .Name = "MiddleClick",
+                        .Type = (event.type == sf::Event::MouseButtonPressed) ? ActionType::Begin : ActionType::End,
+                        .Position = Vec2{(f32)event.mouseButton.x, (f32)event.mouseButton.y}
+                    };
+                    scene->OnAction(action);
+                } break;
+            }
         }
+
     }
 }
 

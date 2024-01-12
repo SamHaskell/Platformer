@@ -79,6 +79,31 @@ void ScenePlay::OnAction(Action action)
     {
         if (action.Type == ActionType::Begin)
         {
+            if (m_PaintTiles)
+            {
+                Vec2 mousePos = ScreenToWorld({(f32)action.Position.x, (f32)action.Position.y});
+                Vec2 tilePos = {(f32)((i32)mousePos.x / 32), (f32)((i32)mousePos.y / 32)};
+
+                auto e = m_World.AddEntity("tile");
+                e->AddComponent<CTransform>(tilePos * 32.0f, Vec2{2.0f, 2.0f}, 0.0f);
+                e->AddComponent<CSprite>(
+                    ResourceManager::GetInstance().GetTexture(m_CurrentSelectedTile.TextureSource),
+                    m_CurrentSelectedTile.OffsetX,
+                    m_CurrentSelectedTile.OffsetY,
+                    m_CurrentSelectedTile.Width,
+                    m_CurrentSelectedTile.Height,
+                    1.0f);
+
+                e->AddComponent<CTile>(
+                    m_CurrentSelectedTile.Name,
+                    m_CurrentSelectedTile.TextureSource,
+                    m_CurrentSelectedTile.Width,
+                    m_CurrentSelectedTile.Height,
+                    m_CurrentSelectedTile.OffsetX,
+                    m_CurrentSelectedTile.OffsetY);
+
+                e->AddComponent<CBoxCollider>(Vec2{(f32)m_CurrentSelectedTile.Width, (f32)m_CurrentSelectedTile.Height});
+            }
         }
         else if (action.Type == ActionType::End)
         {
@@ -234,24 +259,26 @@ void ScenePlay::OnDrawGUI()
         {
             ImGui::Separator();
 
+            ImGui::Checkbox("Paint Tiles", &m_PaintTiles);
+
+            ImGui::Separator();
+
             for (auto &[key, value] : m_TileData)
             {
-                // Render a selectable image button of the tile
-
-                ImGui::Text("%s", key.c_str());
-                ImGui::Text("Texture: %s", value.TextureSource.c_str());
-
                 sf::Sprite sprite(ResourceManager::GetInstance().GetTexture(value.TextureSource), sf::IntRect(value.OffsetX, value.OffsetY, value.Width, value.Height));
 
                 if (ImGui::ImageButton(
                     key.c_str(),
                     sprite,
-                    sf::Vector2f(64, 64)))
+                    sf::Vector2f(32, 32)))
                 {
                     m_CurrentSelectedTile = value;
+                    m_CurrentSelectedTileSprite = sprite;
                 }
 
-                ImGui::Separator();
+                ImGui::SameLine();
+
+                ImGui::Text("%s", key.c_str());
             }
 
             ImGui::EndTabItem();
@@ -487,6 +514,7 @@ void ScenePlay::LoadLevel(const std::string &path)
             i32 offsetY = value["offset-y"];
 
             m_TileData[name] = {
+                name,
                 textureSource,
                 width,
                 height,
