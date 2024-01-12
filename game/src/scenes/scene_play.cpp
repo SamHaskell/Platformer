@@ -100,7 +100,9 @@ void ScenePlay::OnAction(Action action)
                     if (e->HasComponent<CTransform>()) 
                     {
                         Vec2 tilePosGrid = m_WorldGrid.GridFromWorld(e->GetComponent<CTransform>().Position);
-                        if (tilePosGrid == m_WorldGrid.GridFromWorld(mousePosGrid)) 
+                        NT_INFO("Tile Pos Grid: %f, %f", tilePosGrid.x,
+                            tilePosGrid.y);
+                        if (tilePosGrid == mousePosGrid) 
                         {
                             e->Destroy();
                         }
